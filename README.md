@@ -1,8 +1,8 @@
-ConsoleWrap
+ConsoleWrap for JS
 ================
 
 ## Summary
-This plugin places your selected variable in console.log as console.log('variable' , variable); 
+This plugin places your selected variable in console.log as console.log('variable' , variable); javascript only.
 THIS IS NOT A SNIPPET.
 
 ## Screenshot
