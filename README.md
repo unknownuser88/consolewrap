@@ -29,6 +29,6 @@ Unfortunately there are other plugins that use "ctrl+shift+q", this is a hard pr
 
 ## Usage
 
-First you need to select a variable and press "ctrl+shift+q". The cosole.log line will appear on the next line. 
+First you need to select a variable and press "ctrl+shift+q". The console.log line will appear on the next line. 
 
 ---
