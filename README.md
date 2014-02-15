@@ -6,9 +6,9 @@ This plugin places your selected variable in console.log as console.log('variabl
 THIS IS NOT A SNIPPET.
 
 ## Screenshots
-![ScreenShot](https://raw.github.com/unknownuser88/consolewrap/master/screenshot1.PNG)
+![ScreenShot](https://raw.github.com/unknownuser88/consolewrap/master/screenshot.PNG)
 
-![ScreenShot1](https://raw.github.com/unknownuser88/consolewrap/master/screenshot2.PNG)
+![ScreenShot](https://raw.github.com/unknownuser88/consolewrap/master/screenshot2.png)
 ## Install
 
 #### Git Clone
