@@ -1,0 +1,3 @@
+[
+    { "command": "consoleremove", "caption": "Remove All Console.logs" }
+]
