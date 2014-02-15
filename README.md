@@ -8,7 +8,7 @@ THIS IS NOT A SNIPPET.
 ## Screenshots
 ![ScreenShot](https://raw.github.com/unknownuser88/consolewrap/master/screenshot1.PNG)
 
-![ScreenShot](https://raw.github.com/unknownuser88/consolewrap/master/screenshot2.PNG)
+![ScreenShot](https://raw.github.com/unknownuser88/consolewrap/master/screenshot2.png)
 ## Install
 
 #### Git Clone
