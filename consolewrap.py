@@ -26,6 +26,7 @@ class ConsoleremoveCommand(sublime_plugin.TextCommand):
         string = self.view.substr(line_region)
         newstring = re.sub(r"(?m)^((?!//|/\*).)*console\.log.*", '', string)
         self.view.replace(edit, line_region, newstring)
+        sublime.status_message('removed');
         self.view.sel().clear()
 
     def get_selections(self):
