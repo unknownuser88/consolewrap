@@ -13,7 +13,10 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
                 sublime.status_message('Please Make A Selection');
             else:
                 var_text = view.substr(cursor)
-                view.insert(edit, line_region.end(), "\n%sconsole.log('%s ' , %s);" % (match.group(1), var_text, var_text))
+                inserted_console_template = "\n%sconsole.log('%s ' , %s);"
+                if 'source.coffee' in view.scope_name(0):
+                  inserted_console_template = "\n%sconsole.log '%s', %s"
+                view.insert(edit, line_region.end(), inserted_console_template % (match.group(1), var_text, var_text))
                 end = view.line(line_region.end() + 1).end()
                 view.sel().clear()
                 view.sel().add(sublime.Region(end, end))
