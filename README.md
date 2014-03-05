@@ -2,14 +2,11 @@ ConsoleWrap for JS
 ================
 
 ## Summary
-This plugin places your selected variable in console.log as console.log('variable' , variable).
-
-The plugin inserts coffeescript `console.log 'variable', variable` in CoffeeScript files (require [Better CoffeeScript plugin](https://sublime.wbond.net/packages/Better%20CoffeeScript))
-
+This plugin places your selected variable in console.log as console.log('variable' , variable); javascript only.
 THIS IS NOT A SNIPPET.
 
 ## Screenshots
-![ScreenShot](https://raw.github.com/unknownuser88/consolewrap/master/screenshot.PNG)
+![ScreenShot](https://raw.github.com/unknownuser88/consolewrap/master/screenshot1.PNG)
 
 ![ScreenShot](https://raw.github.com/unknownuser88/consolewrap/master/screenshot2.png)
 ## Install
@@ -32,8 +29,8 @@ Unfortunately there are other plugins that use "ctrl+shift+q", this is a hard pr
 
 ## Usage
 
-First you need to select a variable and press "ctrl+shift+q". The console.log line will appear on the next line.
+First you need to select a variable and press "ctrl+shift+q". The console.log line will appear on the next line. 
 
-You can Also remove all console.logs from your selsection or from all document
+You can Also remove all console.logs from your selsection or from all document 
 
 ---
