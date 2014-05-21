@@ -13,7 +13,10 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
                 sublime.status_message('Please Make A Selection');
             else:
                 var_text = view.substr(cursor)
-                view.insert(edit, line_region.end(), "\n%sconsole.log('%s ' , %s);" % (match.group(1), var_text, var_text))
+                if var_text[-1:] == ";":
+                    var_text = var_text[:-1]
+                var_text_escaped = var_text.replace("'", "\\'")
+                view.insert(edit, line_region.end(), "\n%sconsole.log('%s ' , %s);" % (match.group(1), var_text_escaped, var_text))
                 end = view.line(line_region.end() + 1).end()
                 view.sel().clear()
                 view.sel().add(sublime.Region(end, end))
