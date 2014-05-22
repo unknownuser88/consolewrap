@@ -35,8 +35,10 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
 
     @staticmethod
     def get_wrapper(lang, spaces, var_text, var_text_escaped):
-        if lang == 'rb' or lang == 'erb':
+        if lang == 'rb':
             return "\n%sputs '-----------------------------[log][auto][%s]:';p %s" % (spaces, var_text_escaped, var_text)
+        elif lang == 'erb':
+            return "<% \n%sputs '-----------------------------[log][auto][%s]:';p %s %>" % (spaces, var_text_escaped, var_text)
         else:
             return "\n%sconsole.log('%s ' , %s);" % (spaces, var_text_escaped, var_text)
 
