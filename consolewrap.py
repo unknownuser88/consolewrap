@@ -10,11 +10,14 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
         match = re.search(r"(\s*)", string)
         if match:
             if cursor.empty():
-                sublime.status_message('Please Make A Selection');
+                var_text = sublime.get_clipboard()
             else:
                 var_text = view.substr(cursor)
-                if var_text[-1:] == ";":
-                    var_text = var_text[:-1]
+            if var_text[-1:] == ";":
+                var_text = var_text[:-1]
+            if var_text.empty():
+                sublime.status_message('Please make a selection or copy something.')
+            else:
                 var_text_escaped = var_text.replace("'", "\\'")
                 view.insert(edit, line_region.end(), "\n%sconsole.log('%s ' , %s);" % (match.group(1), var_text_escaped, var_text))
                 end = view.line(line_region.end() + 1).end()
