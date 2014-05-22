@@ -38,7 +38,7 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
         if lang == 'rb':
             return "\n%sputs '-----------------------------[log][auto][%s]:';p %s" % (spaces, var_text_escaped, var_text)
         elif lang == 'erb':
-            return "\n<%% %sputs '-----------------------------[log][auto][%s]:';p %s %%>" % (spaces, var_text_escaped, var_text)
+            return "\n%s<%% puts '-----------------------------[log][auto][%s]:';p %s %%>" % (spaces, var_text_escaped, var_text)
         else:
             return "\n%sconsole.log('%s ' , %s);" % (spaces, var_text_escaped, var_text)
 
