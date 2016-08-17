@@ -6,10 +6,27 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
         view = self.view
         cursors = view.sel()
         
+        def get_indent(region):
+            matches = re.findall(r'^(\s*)[^\s]', view.substr(region))
+            return matches and len(matches) and matches[0] or ''
+
+        def find_next_line(region):
+            while 0 < region.a and region.b < view.size() and view.classify(region.a) is sublime.CLASS_EMPTY_LINE:
+                region = view.line(region.a - 1)
+            return region
+
         for cursor in cursors:
             line_region = view.line(cursor)
             string = view.substr(line_region)
             match = re.search(r"(\s*)", string)
+
+            indent_str = get_indent(line_region)
+
+            indent_line = view.substr(find_next_line(line_region)).strip()
+            need_indent = [True for i in ['{', '=', ':', '->', '=>'] if indent_line.endswith(i)]
+            indent_line.lstrip('{}[]() \t')
+            if need_indent:
+                indent_str += len(indent_str) and indent_str[0] == '\t' and '\t' or '  '
 
             file_name = view.file_name()
             if file_name is None:
@@ -29,24 +46,27 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
                     sublime.status_message('Please make a selection or copy something.')
                 else:
                     var_text_escaped = var_text.replace("'", "\\'")
-                    text = ConsolewrapCommand.get_wrapper(self, extension, match.group(1), var_text, var_text_escaped)
+                    text = ConsolewrapCommand.get_wrapper(self, extension,var_text, var_text_escaped, indent_str)
                     view.insert(edit, line_region.end(), text)
                     end = view.line(line_region.end() + 1).end()
 
         view.sel().clear()
         view.sel().add(sublime.Region(end, end))
 
+
     @staticmethod
-    def get_wrapper(self, lang, spaces, var_text, var_text_escaped):
+    def get_wrapper(self, lang, var_text, var_text_escaped, indent_str):
+        tmpl = "\n" + indent_str
         if lang == 'rb':
-            return "\n%sputs '-----------------------------[log][auto][%s]:';p %s" % (spaces, var_text_escaped, var_text)
+            tmpl += "puts '-----------------------------[log][auto][%s]:';p %s" % (var_text_escaped, var_text)
         elif lang == 'erb':
-            return "\n%s<%% puts '-----------------------------[log][auto][%s]:';p %s %%>" % (spaces, var_text_escaped, var_text)
+            tmpl += "<%% puts '-----------------------------[log][auto][%s]:';p %s %%>" % (var_text_escaped, var_text)
         else:
-            inserted_console_template = "\n%sconsole.log('%s', %s);" % (spaces, var_text_escaped, var_text)
             if 'source.coffee' in self.view.scope_name(0):
-                inserted_console_template = "\n%sconsole.log '%s', %s" % (spaces, var_text_escaped, var_text)
-            return inserted_console_template
+                tmpl += "console.log '%s', %s" % (var_text_escaped, var_text)
+            else:
+                tmpl += "console.log('%s', %s);" % (var_text_escaped, var_text)
+            return tmpl
 
 
 class ConsoleremoveCommand(sublime_plugin.TextCommand):
