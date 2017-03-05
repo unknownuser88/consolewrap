@@ -1,0 +1,14 @@
+[
+
+    { 
+        "keys": ["super+shift+q"], 
+        "command": "consolewrap",
+        "args": {"insert_before": false}
+    },
+    { 
+        "keys": ["super+shift+alt+q"], 
+        "command": "consolewrap",
+        "args": {"insert_before": true}
+    }
+
+]
