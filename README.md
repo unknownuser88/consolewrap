@@ -33,6 +33,12 @@ First you need to select a variable and press "ctrl+shift+q". The console.log li
 You can Also remove or comment all console.logs from your selsection or from all document
 
 Edit settings to format output
-```"consoleStr": "'console.log(\"%s\", %s);' % (text, variable)"``` // for double quotes
-```"consoleStr": "\"console.log('%s', %s);\" % (text, variable + 'Val = ' + variable)"``` // assigne value to temporary parameter
+
+`"consoleStr": "'console.log(\"%s\", %s);' % (text, variable)"`  for double quotes
+
+or
+
+`"consoleStr": "\"console.log('%s', %s);\" % (text, variable + 'Val = ' + variable)"` assigne value to temporary parameter
+
+
 ---
