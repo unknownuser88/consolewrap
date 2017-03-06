@@ -17,7 +17,7 @@
 			}, {
 				"command": "open_file",
 				"args": {
-					"file": "${packages}/User/Console Wrap for js.sublime-settings"
+					"file": "${packages}/User/consolewrap.sublime-settings"
 				},
 				"caption": "Settings – User"
 			}, {

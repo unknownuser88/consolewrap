@@ -1,0 +1,33 @@
+0.1.2
+-----
+
+
+  Fix:
+   - add typescript support #12
+
+ 
+  If you like this plugin, "Star" it on ---> https://github.com/unknownuser88/consolewrap <---
+
+
+
+  Key Binding
+  ===========
+
+  The default key binding is "ctrl+shift+q" and "ctrl+shift+alt+q" (insert before selection).
+
+
+  How To USE
+  ==========
+
+  First you need to select a variable and press "ctrl+shift+q". The console.log line will appear on the next line. Press "ctrl+shift+q" again to change wrapping (info,warn etc.)
+
+  You can Also remove or comment all console.logs from your selsection or from all document
+
+  Edit settings to format output
+
+  "consoleStr": "'console.log(\"%s\", %s);' % (text, variable)" for double quotes
+
+  or
+
+  "consoleStr": "\"console.log('%s', %s);\" % (text, variable + 'Val = ' + variable)" assigne value to temporary parameter
+
