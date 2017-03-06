@@ -1,21 +1,11 @@
-0.1.0
+0.1.1
 -----
 
-  Feature:
-   - Add Comment all console log (Issue #4)
-   - Add Customizable quotes (from settings) (Issue #7)
-   - Add Limit plugin to javascript files (Issue #9)
-   - Add Sssigne console.log value to temporary parameter (Issue #10)
-   - Add Paste to previous line (Issue #11)
 
   Fix:
-   - NameError: global name 'is_log_statement' is not defined (Issue #8)
+   - settings file bug
 
-  README:
-   - Refactoring
-
-
-
+ 
   If you like this plugin, "Star" it on ---> https://github.com/unknownuser88/consolewrap <---
 
 

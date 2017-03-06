@@ -11,13 +11,13 @@
 			"children": [{
 				"command": "open_file",
 				"args": {
-					"file": "${packages}/consolewrap/consolewrap.sublime-settings"
+					"file": "${packages}/Console Wrap for js/consolewrap.sublime-settings"
 				},
 				"caption": "Settings – Default"
 			}, {
 				"command": "open_file",
 				"args": {
-					"file": "${packages}/User/consolewrap.sublime-settings"
+					"file": "${packages}/User/Console Wrap for js.sublime-settings"
 				},
 				"caption": "Settings – User"
 			}, {
@@ -25,21 +25,21 @@
 			}, {
 				"command": "open_file",
 				"args": {
-					"file": "${packages}/consolewrap/Default (OSX).sublime-keymap",
+					"file": "${packages}/Console Wrap for js/Default (OSX).sublime-keymap",
 					"platform": "OSX"
 				},
 				"caption": "Key Bindings – Default"
 			}, {
 				"command": "open_file",
 				"args": {
-					"file": "${packages}/consolewrap/Default (Linux).sublime-keymap",
+					"file": "${packages}/Console Wrap for js/Default (Linux).sublime-keymap",
 					"platform": "Linux"
 				},
 				"caption": "Key Bindings – Default"
 			}, {
 				"command": "open_file",
 				"args": {
-					"file": "${packages}/consolewrap/Default (Windows).sublime-keymap",
+					"file": "${packages}/Console Wrap for js/Default (Windows).sublime-keymap",
 					"platform": "Windows"
 				},
 				"caption": "Key Bindings – Default"
