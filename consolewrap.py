@@ -78,7 +78,7 @@ def get_selections(s):
 class ConsolewrapCommand(sublime_plugin.TextCommand):
 
     def checkFileType(self, view):
-        return set(self.view.scope_name(0).split(' ')).intersection(['source.ts', 'source.tsx' ,'source.coffee', 'source.js', 'text.html.basic', 'text.html.blade', 'text.html.twig'])
+        return set(self.view.scope_name(0).split(' ')).intersection(['text.html.vue', 'source.ts', 'source.tsx' ,'source.coffee', 'source.js', 'text.html.basic', 'text.html.blade', 'text.html.twig'])
 
     def run(self, edit, insert_before=False):
 
