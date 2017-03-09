@@ -78,7 +78,8 @@ def get_selections(s):
 class ConsolewrapCommand(sublime_plugin.TextCommand):
 
     def checkFileType(self, view):
-        return set(self.view.scope_name(0).split(' ')).intersection(['text.html.vue', 'source.ts', 'source.tsx' ,'source.coffee', 'source.js', 'text.html.basic', 'text.html.blade', 'text.html.twig'])
+        supportedFileTypes = ['text.html.vue', 'source.ts', 'source.tsx' ,'source.coffee', 'source.js', 'text.html.basic', 'text.html.blade', 'text.html.twig']
+        return set(self.view.scope_name(0).split(' ')).intersection(supportedFileTypes)
 
     def run(self, edit, insert_before=False):
 
@@ -97,10 +98,17 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
                 return change_log_type(view, edit, line_region, string)
 
             if match:
-                if cursor.empty():
-                    var_text = sublime.get_clipboard()
+                # check if cursor is on the word and trying to get that word 
+                if cursor.begin() == cursor.end():
+                    word = view.word(cursor)
                 else:
-                    var_text = view.substr(cursor)
+                    word = cursor
+
+                var_text = view.substr(word).strip()
+
+                # if selection is empty and there is no word under cursor use clipboard
+                if not var_text:
+                    var_text = sublime.get_clipboard()
 
                 if var_text[-1:] == ";":
                     var_text = var_text[:-1]
@@ -130,8 +138,6 @@ class ConsolecommentCommand(sublime_plugin.TextCommand):
         matches = re.finditer(r"(?<!\/\/\s)console\..*?\);?", string, re.MULTILINE)
 
         for matchNum, match in enumerate(matches):
-            # matchNum = matchNum + 1
-            # print ("Match {matchNum} was found at {start}-{end}: {match}".format(matchNum = matchNum, start = match.start(), end = match.end(), match = match.group(0)))
             string = string.replace(match.group(0), "// "+match.group(0))
 
         self.view.replace(edit, line_region, string)
