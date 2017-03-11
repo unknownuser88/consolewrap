@@ -16,9 +16,11 @@ def plugin_loaded():
     settings.get = settings.loaded_settings.get
     settings.set = settings.loaded_settings.set
 
-def get_indent(view, region):
+def get_indent(view, region, insert_before):
     matches = re.findall(r'^(\s*)[^\s]', view.substr(region))
     indent_str = matches and len(matches) and matches[0] or ''
+    if insert_before:
+        return indent_str
     indent_line = view.substr(find_next_line(view, region)).strip()
     need_indent = [True for i in ['{', '=', ':', '->', '=>'] if indent_line.endswith(i)]
     indent_line.lstrip('{}[]() \t')
@@ -116,7 +118,7 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
                 if len(var_text) == 0:
                     return sublime.status_message('Console Wrap: Please make a selection or copy something.')
                 else:
-                    indent_str = get_indent(view, line_region)
+                    indent_str = get_indent(view, line_region,insert_before)
                     text = get_wrapper(view, var_text, indent_str, insert_before)
                     if insert_before:
                         lineReg = line_region.begin()
