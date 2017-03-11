@@ -1,20 +1,15 @@
 import re
 import sublime
 import sublime_plugin
-import sys
 
-PY3 = sys.version > '3'
-if PY3:
+try:
     from .settings import *
-else:
+except ValueError:
     from settings import *
 
-LOG_TYPES = ['log', 'info', 'warn', 'error']
-
 def plugin_loaded():
-    settings.loaded_settings = sublime.load_settings('consolewrap.sublime-settings')
-    settings.get = settings.loaded_settings.get
-    settings.set = settings.loaded_settings.set
+    global settings
+    settings = sublime.load_settings('consolewrap.sublime-settings')
 
 def get_indent(view, region, insert_before):
     matches = re.findall(r'^(\s*)[^\s]', view.substr(region))
@@ -39,31 +34,57 @@ def find_next_line(view, region):
         region = view.line(region.a - 1)
     return region
 
-def get_wrapper(view, variable, indent_str, insert_before):
-    cmd = settings.get('consoleStr') or "\"console.log('%s', %s);\" % (text, variable)"
-    if checkQuotes(cmd) == '"':
-        text = variable.replace('"', '\\"')
+def get_wrapper(view, var, indent_str, insert_before):
+    consoleStr = settings.get('consoleStr') or "{title}, {variable}"
+    single_quotes = settings.get('single_quotes') or False
+    consoleFunc = settings.get('consoleFunc') or ['console','log']
+    separator = ", "
+
+    if single_quotes:
+        text = var.replace("'", "\\'")
     else:
-        text = variable.replace("'", "\\'")
+        text = var.replace('"', '\\"')
+
+    consoleArr = consoleStr.split(separator)
+
+    t = consoleArr[0]
+
+    if len(consoleArr) >= 2:
+        v = ', '.join(consoleArr[1:])
+    else:
+        v = t
+
     tmpl = indent_str if insert_before else ("\n" + indent_str)
+
+    quotes = "'" if single_quotes else "\""
+    a = "{4}({0}{1}{0}{2}{3});".format(quotes, t, separator, v , ".".join(consoleFunc))
+    # print('********', a,text,var)
+    a = a.format(title=text, variable=var)
+
+    # print('********', a,text,var)
     
-    tmpl += eval(cmd)
+    tmpl += a
 
     tmpl += "\n" if insert_before else ""
+
     return tmpl
 
 def is_log_string(line):
-    return True in [line.strip().startswith('console.' + i) for i in LOG_TYPES]
+    log_types =  settings.get('log_types') or ['log', 'info', 'warn', 'error']
+    logFunc = settings.get('consoleFunc')[0] or 'console'
+    return True in [line.strip().startswith(logFunc+'.' + i) for i in log_types]
 
 def change_log_type(view, edit, line_region, line):
+    log_types =  settings.get('log_types') or ['log', 'info', 'warn', 'error']
+    logFunc = settings.get('consoleFunc')[0] or 'console'
     current_type = None
-    matches = re.match(r'^\s*console\.(\w+)', line)
+    matches = re.match(r'^\s*'+logFunc+'\.(\w+)', line)
     if not matches: return
     current_type = matches.group(1)
-    if current_type not in LOG_TYPES: return
+    if current_type not in log_types: return
     inc = True and 1 or -1
-    next_type = LOG_TYPES[(LOG_TYPES.index(current_type) + 1) % len(LOG_TYPES)]
-    new_line = line.replace('console.' + current_type, 'console.' + next_type)
+    next_type = log_types[(log_types.index(current_type) + 1) % len(log_types)]
+    new_line = line.replace(logFunc + '.' + current_type, logFunc + '.' + next_type)
     view.replace(edit, line_region, new_line)
 
 def get_selections(s):
@@ -77,19 +98,29 @@ def get_selections(s):
         selections.add(full_region)
     return selections
 
+def checkFileType(view):
+    supportedFileTypes = settings.get('supportedFileTypes') or [
+        'text.html.vue',
+        'source.ts',
+        'source.tsx',
+        'source.coffee',
+        'source.js',
+        'text.html.basic',
+        'text.html.blade',
+        'text.html.twig'
+    ]
+    return set(view.scope_name(0).split(' ')).intersection(supportedFileTypes)
+
 class ConsolewrapCommand(sublime_plugin.TextCommand):
 
-    def checkFileType(self, view):
-        supportedFileTypes = ['text.html.vue', 'source.ts', 'source.tsx' ,'source.coffee', 'source.js', 'text.html.basic', 'text.html.blade', 'text.html.twig']
-        return set(self.view.scope_name(0).split(' ')).intersection(supportedFileTypes)
 
     def run(self, edit, insert_before=False):
 
-        if not self.checkFileType(self.view):
+        if not checkFileType(self.view):
             return sublime.status_message('Console Wrap: Not work in this file type')
 
         view = self.view
-        cursors = view.sel()
+        cursors = view.sel() if insert_before else reversed(view.sel())
 
         for cursor in cursors:
             line_region = view.line(cursor)
@@ -120,6 +151,7 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
                 else:
                     indent_str = get_indent(view, line_region,insert_before)
                     text = get_wrapper(view, var_text, indent_str, insert_before)
+                    # print('text', text)
                     if insert_before:
                         lineReg = line_region.begin()
                     else:
@@ -133,11 +165,12 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
 
 class ConsolecommentCommand(sublime_plugin.TextCommand):
     def run(self, edit):
+        logFunc = settings.get('consoleFunc')[0] or 'console'
         get_selections(self)
         cursor = self.view.sel()[0]
         line_region = self.view.line(cursor)
         string = self.view.substr(line_region)
-        matches = re.finditer(r"(?<!\/\/\s)console\..*?\);?", string, re.MULTILINE)
+        matches = re.finditer(r"(?<!\/\/\s)"+logFunc+"\..*?\);?", string, re.MULTILINE)
 
         for matchNum, match in enumerate(matches):
             string = string.replace(match.group(0), "// "+match.group(0))
@@ -148,12 +181,11 @@ class ConsolecommentCommand(sublime_plugin.TextCommand):
 
 class ConsoleremoveCommand(sublime_plugin.TextCommand):
     def run(self, edit):
+        logFunc = settings.get('consoleFunc')[0] or 'console'
         get_selections(self)
         cursor = self.view.sel()[0]
         line_region = self.view.line(cursor)
         string = self.view.substr(line_region)
-        newstring = re.sub(r"(\/\/\s)?console\..*?\);?", '', string)
+        newstring = re.sub(r"(\/\/\s)?"+logFunc+"\..*?\);?", '', string)
         self.view.replace(edit, line_region, newstring)
         self.view.sel().clear()
-
-   
