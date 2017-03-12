@@ -1,9 +1,0 @@
-{
-	/*
-		"consoleStr": "'console.log(\"%s\", %s);' % (text, variable)", // for double quotes
-		"consoleStr": "\"console.log('%s', %s);\" % (text, variable + 'Val = ' + variable)", // assigne value to temporary parameter
-
-
-	*/
-    "consoleStr": "\"console.log('%s', %s);\" % (text, variable)" 
-}

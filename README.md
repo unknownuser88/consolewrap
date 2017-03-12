@@ -34,11 +34,26 @@ You can Also remove or comment all console.logs from your selsection or from all
 
 Edit settings to format output
 
-`"consoleStr": "'console.log(\"%s\", %s);' % (text, variable)"`  for double quotes
-
-or
-
-`"consoleStr": "\"console.log('%s', %s);\" % (text, variable + 'Val = ' + variable)"` assigne value to temporary parameter
-
+```javascript
+{
+	/*
+		you can customize consoleStr as you wish for example "{title}, tmpVal = {variable}" to assigne value to temporary parameter output: console.log('title', tmpVal = variable);
+	*/
+    "consoleStr": "{title}, {variable}",
+    "consoleFunc": ["console", "log"], // you can change default log statement for example ["logger", "info"] output: logger.info('title', variable);
+    "single_quotes": false, // if true output: console.log('title', variable);
+    "supportedFileTypes" : [
+    	"text.html.vue",
+    	"source.ts",
+    	"source.tsx",
+    	"source.coffee",
+    	"source.js",
+    	"text.html.basic",
+    	"text.html.blade",
+    	"text.html.twig"
+    ],
+    "log_types": ["log", "info", "warn", "error"]
+}
+```
 
 ---
