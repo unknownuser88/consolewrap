@@ -11,6 +11,19 @@ def plugin_loaded():
     global settings
     settings = sublime.load_settings('consolewrap.sublime-settings')
 
+def getConsoleFunc():
+    return settings.get('consoleFunc') or ['console','log']
+
+def getConsoleLogTypes():
+    return settings.get('log_types') or ['log', 'info', 'warn', 'error']
+
+def getConsoleStr():
+    return settings.get('consoleStr') or "{title}, {variable}"
+
+def getConsoleSingleQuotes():
+    return settings.get('single_quotes') or False
+
+
 def get_indent(view, region, insert_before):
     matches = re.findall(r'^(\s*)[^\s]', view.substr(region))
     indent_str = matches and len(matches) and matches[0] or ''
@@ -35,9 +48,9 @@ def find_next_line(view, region):
     return region
 
 def get_wrapper(view, var, indent_str, insert_before):
-    consoleStr = settings.get('consoleStr') or "{title}, {variable}"
-    single_quotes = settings.get('single_quotes') or False
-    consoleFunc = settings.get('consoleFunc') or ['console','log']
+    consoleStr = getConsoleStr()
+    single_quotes = getConsoleSingleQuotes()
+    consoleFunc = getConsoleFunc()
     separator = ", "
 
     if single_quotes:
@@ -58,11 +71,8 @@ def get_wrapper(view, var, indent_str, insert_before):
 
     quotes = "'" if single_quotes else "\""
     a = "{4}({0}{1}{0}{2}{3});".format(quotes, t, separator, v , ".".join(consoleFunc))
-    # print('********', a,text,var)
     a = a.format(title=text, variable=var)
 
-    # print('********', a,text,var)
-    
     tmpl += a
 
     tmpl += "\n" if insert_before else ""
@@ -70,13 +80,13 @@ def get_wrapper(view, var, indent_str, insert_before):
     return tmpl
 
 def is_log_string(line):
-    log_types =  settings.get('log_types') or ['log', 'info', 'warn', 'error']
-    logFunc = settings.get('consoleFunc')[0] or 'console'
+    log_types =  getConsoleLogTypes()
+    logFunc = getConsoleFunc()[0]
     return True in [line.strip().startswith(logFunc+'.' + i) for i in log_types]
 
 def change_log_type(view, edit, line_region, line):
-    log_types =  settings.get('log_types') or ['log', 'info', 'warn', 'error']
-    logFunc = settings.get('consoleFunc')[0] or 'console'
+    log_types =  getConsoleLogTypes()
+    logFunc = getConsoleFunc()[0]
     current_type = None
     matches = re.match(r'^\s*'+logFunc+'\.(\w+)', line)
     if not matches: return
@@ -165,7 +175,7 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
 
 class ConsolecommentCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        logFunc = settings.get('consoleFunc')[0] or 'console'
+        logFunc = getConsoleFunc()[0]
         get_selections(self)
         cursor = self.view.sel()[0]
         line_region = self.view.line(cursor)
@@ -181,7 +191,7 @@ class ConsolecommentCommand(sublime_plugin.TextCommand):
 
 class ConsoleremoveCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        logFunc = settings.get('consoleFunc')[0] or 'console'
+        logFunc = getConsoleFunc()[0]
         get_selections(self)
         cursor = self.view.sel()[0]
         line_region = self.view.line(cursor)
