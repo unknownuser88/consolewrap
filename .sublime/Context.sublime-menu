@@ -4,8 +4,8 @@
         "caption": "Console Wrap",
         "children":
         [
-            { "command": "consoleremove", "caption": "Remove All Console.logs" },
-            { "command": "consolecomment", "caption": "Comment All Console.logs" }
+            { "command": "console_clean", "args": {"action": "remove"}, "caption": "Remove All Console.logs" },
+            { "command": "console_clean", "args": {"action": "commentas"}, "caption": "Comment All Console.logs" }
 
         ]
     }

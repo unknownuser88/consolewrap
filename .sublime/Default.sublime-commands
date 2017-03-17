@@ -1,6 +1,12 @@
-[
-    {
-        "caption": "Console Wrap",
-        "command": "consolewrap"
-    }
-]
+[{
+	"caption": "Console Wrap Create logs",
+	"command": "console_wrap"
+}, {
+	"caption": "Console Wrap Remove logs",
+	"command": "console_clean",
+	"args": {"action": "remove"}
+}, {
+	"caption": "Console Wrap Comment logs",
+	"command": "console_clean",
+	"args": {"action": "comment"}
+}]

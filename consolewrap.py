@@ -23,6 +23,9 @@ def getConsoleStr():
 def getConsoleSingleQuotes():
     return settings.get('single_quotes') or False
 
+def msg(msg):
+    print ("[Console Wrap] %s" % msg)
+
 
 def get_indent(view, region, insert_before):
     matches = re.findall(r'^(\s*)[^\s]', view.substr(region))
@@ -121,8 +124,31 @@ def checkFileType(view):
     ]
     return set(view.scope_name(0).split(' ')).intersection(supportedFileTypes)
 
-class ConsolewrapCommand(sublime_plugin.TextCommand):
+def comment_log(self, edit):
+    logFunc = getConsoleFunc()[0]
+    get_selections(self)
+    cursor = self.view.sel()[0]
+    line_region = self.view.line(cursor)
+    string = self.view.substr(line_region)
+    matches = re.finditer(r"(?<!\/\/\s)"+logFunc+"\..*?\);?", string, re.MULTILINE)
 
+    for matchNum, match in enumerate(matches):
+        string = string.replace(match.group(0), "// "+match.group(0))
+
+    self.view.replace(edit, line_region, string)
+    self.view.sel().clear()
+
+def remove_log(self, edit):
+    logFunc = getConsoleFunc()[0]
+    get_selections(self)
+    cursor = self.view.sel()[0]
+    line_region = self.view.line(cursor)
+    string = self.view.substr(line_region)
+    newstring = re.sub(r"(\/\/\s)?"+logFunc+"\..*?\);?", '', string)
+    self.view.replace(edit, line_region, newstring)
+    self.view.sel().clear()
+
+class ConsoleWrapCommand(sublime_plugin.TextCommand):
 
     def run(self, edit, insert_before=False):
 
@@ -161,7 +187,7 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
                 else:
                     indent_str = get_indent(view, line_region,insert_before)
                     text = get_wrapper(view, var_text, indent_str, insert_before)
-                    # print('text', text)
+                    # msg('text', text)
                     if insert_before:
                         lineReg = line_region.begin()
                     else:
@@ -173,29 +199,13 @@ class ConsolewrapCommand(sublime_plugin.TextCommand):
             view.sel().clear()
             view.sel().add(sublime.Region(end, end)) 
 
-class ConsolecommentCommand(sublime_plugin.TextCommand):
-    def run(self, edit):
-        logFunc = getConsoleFunc()[0]
-        get_selections(self)
-        cursor = self.view.sel()[0]
-        line_region = self.view.line(cursor)
-        string = self.view.substr(line_region)
-        matches = re.finditer(r"(?<!\/\/\s)"+logFunc+"\..*?\);?", string, re.MULTILINE)
+class ConsoleCleanCommand(sublime_plugin.TextCommand):
 
-        for matchNum, match in enumerate(matches):
-            string = string.replace(match.group(0), "// "+match.group(0))
+    def is_enabled(self):
+        if not checkFileType(self.view):
+            return False
+        return True
 
-        self.view.replace(edit, line_region, string)
-        self.view.sel().clear() 
+    def run(self, edit, action=False):
+        globals()[action + "_log"](self, edit)
 
-
-class ConsoleremoveCommand(sublime_plugin.TextCommand):
-    def run(self, edit):
-        logFunc = getConsoleFunc()[0]
-        get_selections(self)
-        cursor = self.view.sel()[0]
-        line_region = self.view.line(cursor)
-        string = self.view.substr(line_region)
-        newstring = re.sub(r"(\/\/\s)?"+logFunc+"\..*?\);?", '', string)
-        self.view.replace(edit, line_region, newstring)
-        self.view.sel().clear()
