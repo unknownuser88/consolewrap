@@ -5,7 +5,7 @@
         "children":
         [
             { "command": "console_clean", "args": {"action": "remove"}, "caption": "Remove All Console.logs" },
-            { "command": "console_clean", "args": {"action": "commentas"}, "caption": "Comment All Console.logs" }
+            { "command": "console_clean", "args": {"action": "comment"}, "caption": "Comment All Console.logs" }
 
         ]
     }
