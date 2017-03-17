@@ -2,12 +2,12 @@
 
 	{ 
 		"keys": ["ctrl+shift+q"], 
-		"command": "consolewrap",
+		"command": "console_wrap",
 		"args": {"insert_before": false}
 	},
 	{ 
 		"keys": ["ctrl+shift+alt+q"], 
-		"command": "consolewrap",
+		"command": "console_wrap",
 		"args": {"insert_before": true}
 	}
 
