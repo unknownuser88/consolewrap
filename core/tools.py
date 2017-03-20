@@ -1,6 +1,5 @@
-
-def msg(msg):
-    print ("[Console Wrap] %s" % msg)
+def msg(*msg):
+    print ("[Console Wrap] " , msg)
 
 def get_selections(s, sublime):
     selections = s.view.sel()

@@ -2,23 +2,18 @@ import sublime
 import sublime_plugin
 
 try:
-    from .settings import *
-    from .tools import *
-    from .js_wrapper import *
+    from .core.settings import *
+    from .core.js_wrapper import *
 except ValueError:
-    from settings import *
-    from tools import *
-    from js_wrapper import *
-
-msg('start')
+    from core.settings import *
+    from core.js_wrapper import *
 
 def plugin_loaded():
-    settings.loaded_settings = sublime.load_settings('consolewrap.sublime-settings')
-    settings.get = settings.loaded_settings.get
-    settings.set = settings.loaded_settings.set
+    msg('*' * 30 + ' start ' + '*' * 30)
+
 
 def checkFileType(view):
-    supportedFileTypes = settings.get('supportedFileTypes') or [
+    supportedFileTypes = settings().get('supportedFileTypes') or [
         'text.html.vue',
         'source.ts',
         'source.tsx',
@@ -30,16 +25,16 @@ def checkFileType(view):
     ]
     return set(view.scope_name(0).split(' ')).intersection(supportedFileTypes)
 
-def getWrapperType(view):
 
+def getWrapperType(view):
     if not checkFileType(view):
         return False
 
     wrapperType = 'js'
     return wrapperType
 
-class ConsoleWrapCommand(sublime_plugin.TextCommand):
 
+class ConsoleWrapCommand(sublime_plugin.TextCommand):
     def run(self, edit, insert_before=False):
         wrapper = getWrapperType(self.view)
 
@@ -47,8 +42,8 @@ class ConsoleWrapCommand(sublime_plugin.TextCommand):
             return sublime.status_message('Console Wrap: Not work in this file type')
         self.view.run_command(wrapper + '_wrapp_create', {'insert_before': insert_before})
 
-class ConsoleCleanCommand(sublime_plugin.TextCommand):
 
+class ConsoleCleanCommand(sublime_plugin.TextCommand):
     def is_enabled(self):
         if not checkFileType(self.view):
             return False

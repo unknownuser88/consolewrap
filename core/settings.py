@@ -48,15 +48,5 @@ class ConsoleWrapEditSettingsCommand(sublime_plugin.ApplicationCommand):
         return STVER >= 3124
 
 
-class settings(object):
-    loaded_settings = sublime.load_settings('consolewrap.sublime-settings')
-
-
-    get = loaded_settings.get
-    set = loaded_settings.set
-
-    def __init__(self):
-        print('settings init')
-
-    def load(self):
-        pass
+def settings():
+    return sublime.load_settings('consolewrap.sublime-settings')

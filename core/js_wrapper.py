@@ -3,24 +3,31 @@ import sublime
 import sublime_plugin
 
 try:
-    from .settings import *
+    from .settings import settings
     from .tools import *
 except ValueError:
-    from settings import *
+    from settings import settings
     from tools import *
 
-class Base(sublime_plugin.TextCommand):
-    def __init__(self, arg):
-        sublime_plugin.TextCommand.__init__(self, arg)
-        self.sett = settings
-
-
-class JsWrappCreateCommand(sublime_plugin.TextCommand):
+class JsWrapBase(sublime_plugin.TextCommand):
 
     def __init__(self, arg):
         sublime_plugin.TextCommand.__init__(self, arg)
-        self.settings = settings
-        print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+
+    def getConsoleFunc(self):
+        return settings().get('consoleFunc') or ['console','log']
+
+    def getConsoleLogTypes(self):
+        return settings().get('log_types') or ['log', 'info', 'warn', 'error']
+
+    def getConsoleStr(self):
+        return settings().get('consoleStr') or "{title}, {variable}"
+
+    def getConsoleSingleQuotes(self):
+        return settings().get('single_quotes') or False
+
+
+class JsWrappCreateCommand(JsWrapBase):
 
     def run(self, edit, insert_before=False):
         view = self.view
@@ -66,7 +73,6 @@ class JsWrappCreateCommand(sublime_plugin.TextCommand):
         if not self.is_log_string(string):
             view.sel().clear()
             view.sel().add(sublime.Region(end, end))
-
 
     def is_log_string(self, line):
         log_types =  self.getConsoleLogTypes()
@@ -135,26 +141,10 @@ class JsWrappCreateCommand(sublime_plugin.TextCommand):
 
         return tmpl
 
-    @classmethod
-    def getConsoleFunc(self):
-        # msg (self.gs())
-        return self.settings.get('consoleFunc') or ['console','log']
 
-    # @classmethod
-    def getConsoleLogTypes(self):
-        return self.settings.get('log_types') or ['log', 'info', 'warn', 'error']
-
-    # @classmethod
-    def getConsoleStr(self):
-        return self.settings.get('consoleStr') or "{title}, {variable}"
-
-    # @classmethod
-    def getConsoleSingleQuotes(self):
-        return self.settings.get('single_quotes') or False
-
-class JsWrappCommentCommand(sublime_plugin.TextCommand):
+class JsWrappCommentCommand(JsWrapBase):
     def run(self, edit):
-        logFunc = JsWrappCreateCommand.getConsoleFunc()[0]
+        logFunc = self.getConsoleFunc()[0]
         get_selections(self, sublime)
         cursor = self.view.sel()[0]
         line_region = self.view.line(cursor)
@@ -167,9 +157,10 @@ class JsWrappCommentCommand(sublime_plugin.TextCommand):
         self.view.replace(edit, line_region, string)
         self.view.sel().clear()
 
-class JsWrappRemoveCommand(sublime_plugin.TextCommand):
+
+class JsWrappRemoveCommand(JsWrapBase):
     def run(self, edit):
-        logFunc = JsWrappCreateCommand.getConsoleFunc()[0]
+        logFunc = self.getConsoleFunc()[0]
         get_selections(self, sublime)
         cursor = self.view.sel()[0]
         line_region = self.view.line(cursor)
