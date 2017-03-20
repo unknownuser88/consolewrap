@@ -4,33 +4,37 @@ import sublime_plugin
 try:
     from .core.settings import *
     from .core.js_wrapper import *
+    from .core.py_wrapper import *
 except ValueError:
     from core.settings import *
     from core.js_wrapper import *
+    from core.py_wrapper import *
 
 def plugin_loaded():
     msg('*' * 30 + ' start ' + '*' * 30)
 
 
 def checkFileType(view):
-    supportedFileTypes = settings().get('supportedFileTypes') or [
-        'text.html.vue',
-        'source.ts',
-        'source.tsx',
-        'source.coffee',
-        'source.js',
-        'text.html.basic',
-        'text.html.blade',
-        'text.html.twig'
-    ]
-    return set(view.scope_name(0).split(' ')).intersection(supportedFileTypes)
+    supportedFileTypes = settings().get('supportedFileTypesa') or {
+        "embedding.php"  : "js",
+        "text.html.vue"  : "js",
+        "source.ts"      : "js",
+        "source.tsx"     : "js",
+        "source.coffee"  : "js",
+        "source.js"      : "js",
+        "text.html.basic": "js",
+        "text.html.blade": "js",
+        "text.html.twig" : "js",
+        "source.python"  : "py"
+    }
+    return (list(set(view.scope_name(0).split(' ')).intersection(supportedFileTypes)), supportedFileTypes)
 
 
 def getWrapperType(view):
-    if not checkFileType(view):
-        return False
+    fileTypeIntersect, supportedFileTypes = checkFileType(view)
 
-    wrapperType = 'js'
+    wrapperType = supportedFileTypes.get(fileTypeIntersect[0], False)
+
     return wrapperType
 
 

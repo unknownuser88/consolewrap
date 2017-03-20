@@ -9,22 +9,19 @@ except ValueError:
     from settings import settings
     from tools import *
 
-class JsWrapBase(sublime_plugin.TextCommand):
+class PyWrappBase(sublime_plugin.TextCommand):
 
     def getConsoleFunc(self):
-        return settings().get('js').get('consoleFunc', ['console','log'])
-
-    def getConsoleLogTypes(self):
-        return settings().get('js').get('log_types', ['log', 'info', 'warn', 'error'])
+        return settings().get('py').get('consoleFunc', ['print'])
 
     def getConsoleStr(self):
-        return settings().get('js').get('consoleStr', "{title}, {variable}")
+        return settings().get('py').get('consoleStr', "{title}, {variable}")
 
     def getConsoleSingleQuotes(self):
-        return settings().get('js').get('single_quotes', False)
+        return settings().get('py').get('single_quotes', False)
 
 
-class JsWrappCreateCommand(JsWrapBase):
+class PyWrappCreateCommand(PyWrappBase):
 
     def run(self, edit, insert_before=False):
         view = self.view
@@ -36,7 +33,7 @@ class JsWrappCreateCommand(JsWrapBase):
             match = re.search(r"(\s*)", string)
 
             if self.is_log_string(string):
-                return self.change_log_type(view, edit, line_region, string)
+                return
 
             if match:
                 # check if cursor is on the word and trying to get that word 
@@ -72,22 +69,8 @@ class JsWrappCreateCommand(JsWrapBase):
             view.sel().add(sublime.Region(end, end))
 
     def is_log_string(self, line):
-        log_types =  self.getConsoleLogTypes()
         logFunc = self.getConsoleFunc()[0]
-        return True in [line.strip().startswith(logFunc+'.' + i) for i in log_types]
-
-    def change_log_type(self, view, edit, line_region, line):
-        log_types =  self.getConsoleLogTypes()
-        logFunc = self.getConsoleFunc()[0]
-        current_type = None
-        matches = re.match(r'^\s*'+logFunc+'\.(\w+)', line)
-        if not matches: return
-        current_type = matches.group(1)
-        if current_type not in log_types: return
-        inc = True and 1 or -1
-        next_type = log_types[(log_types.index(current_type) + 1) % len(log_types)]
-        new_line = line.replace(logFunc + '.' + current_type, logFunc + '.' + next_type)
-        view.replace(edit, line_region, new_line)
+        return line.strip().startswith(logFunc)
 
     def get_indent(self, view, region, insert_before):
         matches = re.findall(r'^(\s*)[^\s]', view.substr(region))
@@ -129,7 +112,7 @@ class JsWrappCreateCommand(JsWrapBase):
         tmpl = indent_str if insert_before else ("\n" + indent_str)
 
         quotes = "'" if single_quotes else "\""
-        a = "{4}({0}{1}{0}{2}{3});".format(quotes, t, separator, v , ".".join(consoleFunc))
+        a = "{4}({0}{1}{0}{2}{3})".format(quotes, t, separator, v , ".".join(consoleFunc))
         a = a.format(title=text, variable=var)
 
         tmpl += a
@@ -139,29 +122,29 @@ class JsWrappCreateCommand(JsWrapBase):
         return tmpl
 
 
-class JsWrappCommentCommand(JsWrapBase):
+class PyWrappCommentCommand(PyWrappBase):
     def run(self, edit):
         logFunc = self.getConsoleFunc()[0]
         get_selections(self, sublime)
         cursor = self.view.sel()[0]
         line_region = self.view.line(cursor)
         string = self.view.substr(line_region)
-        matches = re.finditer(r"(?<!\/\/\s)"+logFunc+"\..*?\);?", string, re.MULTILINE)
+        matches = re.finditer(r"(?<!#\s)"+logFunc+".*?\);?", string, re.MULTILINE)
 
         for matchNum, match in enumerate(matches):
-            string = string.replace(match.group(0), "// "+match.group(0))
+            string = string.replace(match.group(0), "# "+match.group(0))
 
         self.view.replace(edit, line_region, string)
         self.view.sel().clear()
 
 
-class JsWrappRemoveCommand(JsWrapBase):
+class PyWrappRemoveCommand(PyWrappBase):
     def run(self, edit):
         logFunc = self.getConsoleFunc()[0]
         get_selections(self, sublime)
         cursor = self.view.sel()[0]
         line_region = self.view.line(cursor)
         string = self.view.substr(line_region)
-        newstring = re.sub(r"(\/\/\s)?"+logFunc+"\..*?(\n);?", '\n', string)
+        newstring = re.sub(r"(#\s)?"+logFunc+".*?(\n);?", '\n', string)
         self.view.replace(edit, line_region, newstring)
         self.view.sel().clear()
