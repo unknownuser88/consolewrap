@@ -3,15 +3,16 @@
 		you can customize consoleStr as you wish for example "{title}, tmpVal = {variable}" to assigne value to temporary parameter output: console.log('title', tmpVal = variable);
 	*/
     "js": {
-        "consoleStr": " - !!- {title}, {variable}",
+        "consoleStr": "{title}, {variable}",
         "consoleFunc": ["console", "log"], // you can change default log statement for example ["logger", "info"] output: logger.info('title', variable);
         "single_quotes": false, // if true output: console.log('title', variable);
         "log_types": ["log", "info", "warn", "error"],
     },
     "py": {
-        "consoleStr": "{title}, {variable}",
+        "consoleStr": " -- {title}, {variable}",
         "consoleFunc": ["print"],
-        "single_quotes": false
+        "single_quotes": false,
+        "log_types": ["debug", "info", "warn", "error", "critical"],
     },
     "supportedFileTypes" : {
         "embedding.php"  : "js",

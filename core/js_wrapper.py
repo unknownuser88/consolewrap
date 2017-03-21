@@ -74,20 +74,22 @@ class JsWrappCreateCommand(JsWrapBase):
     def is_log_string(self, line):
         log_types =  self.getConsoleLogTypes()
         logFunc = self.getConsoleFunc()[0]
-        return True in [line.strip().startswith(logFunc+'.' + i) for i in log_types]
+        return True in [line.strip().startswith(logFunc) for i in log_types]
 
     def change_log_type(self, view, edit, line_region, line):
         log_types =  self.getConsoleLogTypes()
         logFunc = self.getConsoleFunc()[0]
         current_type = None
-        matches = re.match(r'^\s*'+logFunc+'\.(\w+)', line)
+        matches = re.findall(r'('+logFunc+')(\.?)(\w+)?', line)
         if not matches: return
-        current_type = matches.group(1)
-        if current_type not in log_types: return
-        inc = True and 1 or -1
-        next_type = log_types[(log_types.index(current_type) + 1) % len(log_types)]
-        new_line = line.replace(logFunc + '.' + current_type, logFunc + '.' + next_type)
-        view.replace(edit, line_region, new_line)
+        func, dot, method = matches[0]
+
+        if dot:
+            if method not in log_types: return
+            inc = True and 1 or -1
+            next_type = log_types[(log_types.index(method) + 1) % len(log_types)]
+            new_line = line.replace(logFunc + '.' + method, logFunc + '.' + next_type)
+            view.replace(edit, line_region, new_line)
 
     def get_indent(self, view, region, insert_before):
         matches = re.findall(r'^(\s*)[^\s]', view.substr(region))

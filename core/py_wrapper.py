@@ -14,6 +14,10 @@ class PyWrappBase(sublime_plugin.TextCommand):
     def getConsoleFunc(self):
         return settings().get('py').get('consoleFunc', ['print'])
 
+    def getConsoleLogTypes(self):
+        return settings().get('py').get('log_types', ["debug", "info", "warn", "error", "critical"])
+
+
     def getConsoleStr(self):
         return settings().get('py').get('consoleStr', "{title}, {variable}")
 
@@ -33,7 +37,7 @@ class PyWrappCreateCommand(PyWrappBase):
             match = re.search(r"(\s*)", string)
 
             if self.is_log_string(string):
-                return
+                return self.change_log_type(view, edit, line_region, string)
 
             if match:
                 # check if cursor is on the word and trying to get that word 
@@ -69,8 +73,24 @@ class PyWrappCreateCommand(PyWrappBase):
             view.sel().add(sublime.Region(end, end))
 
     def is_log_string(self, line):
+        log_types =  self.getConsoleLogTypes()
         logFunc = self.getConsoleFunc()[0]
-        return line.strip().startswith(logFunc)
+        return True in [line.strip().startswith(logFunc) for i in log_types]
+
+    def change_log_type(self, view, edit, line_region, line):
+        log_types =  self.getConsoleLogTypes()
+        logFunc = self.getConsoleFunc()[0]
+        current_type = None
+        matches = re.findall(r'('+logFunc+')(\.?)(\w+)?', line)
+        if not matches: return
+        func, dot, method = matches[0]
+
+        if dot:
+            if method not in log_types: return
+            inc = True and 1 or -1
+            next_type = log_types[(log_types.index(method) + 1) % len(log_types)]
+            new_line = line.replace(logFunc + '.' + method, logFunc + '.' + next_type)
+            view.replace(edit, line_region, new_line)
 
     def get_indent(self, view, region, insert_before):
         matches = re.findall(r'^(\s*)[^\s]', view.substr(region))
