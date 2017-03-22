@@ -9,8 +9,7 @@ except ValueError:
     from settings import settings
     from tools import *
 
-class JsWrapBase(sublime_plugin.TextCommand):
-
+class JsSettings():
     def getConsoleFunc(self):
         return settings().get('js').get('consoleFunc', ['console','log'])
 
@@ -22,15 +21,16 @@ class JsWrapBase(sublime_plugin.TextCommand):
 
     def getConsoleSingleQuotes(self):
         return settings().get('js').get('single_quotes', False)
+        
 
+class JsWrapp(JsSettings):
 
-class JsWrappCreateCommand(JsWrapBase):
-
-    def run(self, edit, insert_before=False):
-        view = self.view
+    def create(self, view, edit, insert_before=False):
+        # view = self.view
         cursors = view.sel() if insert_before else reversed(view.sel())
 
         for cursor in cursors:
+
             line_region = view.line(cursor)
             string = view.substr(line_region)
             match = re.search(r"(\s*)", string)
@@ -67,7 +67,7 @@ class JsWrappCreateCommand(JsWrapBase):
                     view.insert(edit, lineReg, text)
                     end = view.line(lineReg + 1).end()
 
-        if not self.is_log_string(string):
+        if string and not self.is_log_string(string):
             view.sel().clear()
             view.sel().add(sublime.Region(end, end))
 
@@ -140,30 +140,26 @@ class JsWrappCreateCommand(JsWrapBase):
 
         return tmpl
 
-
-class JsWrappCommentCommand(JsWrapBase):
-    def run(self, edit):
+    def comment(self, view, edit):
         logFunc = self.getConsoleFunc()[0]
-        get_selections(self, sublime)
-        cursor = self.view.sel()[0]
-        line_region = self.view.line(cursor)
-        string = self.view.substr(line_region)
+        get_selections(view, sublime)
+        cursor = view.sel()[0]
+        line_region = view.line(cursor)
+        string = view.substr(line_region)
         matches = re.finditer(r"(?<!\/\/\s)"+logFunc+"\..*?\);?", string, re.MULTILINE)
 
         for matchNum, match in enumerate(matches):
             string = string.replace(match.group(0), "// "+match.group(0))
 
-        self.view.replace(edit, line_region, string)
-        self.view.sel().clear()
+        view.replace(edit, line_region, string)
+        view.sel().clear()
 
-
-class JsWrappRemoveCommand(JsWrapBase):
-    def run(self, edit):
+    def remove(self, view, edit):
         logFunc = self.getConsoleFunc()[0]
-        get_selections(self, sublime)
-        cursor = self.view.sel()[0]
-        line_region = self.view.line(cursor)
-        string = self.view.substr(line_region)
+        get_selections(view, sublime)
+        cursor = view.sel()[0]
+        line_region = view.line(cursor)
+        string = view.substr(line_region)
         newstring = re.sub(r"(\/\/\s)?"+logFunc+"\..*?(\n);?", '\n', string)
-        self.view.replace(edit, line_region, newstring)
-        self.view.sel().clear()
+        view.replace(edit, line_region, newstring)
+        view.sel().clear()

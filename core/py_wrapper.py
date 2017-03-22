@@ -32,6 +32,11 @@ class PyWrappCreateCommand(PyWrappBase):
         cursors = view.sel() if insert_before else reversed(view.sel())
 
         for cursor in cursors:
+
+            if not view.match_selector(cursor.begin(), 'source.python'):
+                string = None
+                continue
+
             line_region = view.line(cursor)
             string = view.substr(line_region)
             match = re.search(r"(\s*)", string)

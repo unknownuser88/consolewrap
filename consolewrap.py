@@ -14,9 +14,15 @@ def plugin_loaded():
     msg('*' * 30 + ' start ' + '*' * 30)
 
 
+wrapConnector = {}
+
+wrapConnector['js'] = JsWrapp()
+
+
+
 def checkFileType(view):
-    supportedFileTypes = settings().get('supportedFileTypesa') or {
-        "embedding.php"  : "js",
+    supportedFileTypes = {#settings().get('supportedFileTypesa') or {
+        "source.php"     : "js",
         "text.html.vue"  : "js",
         "source.ts"      : "js",
         "source.tsx"     : "js",
@@ -40,11 +46,28 @@ def getWrapperType(view):
 
 class ConsoleWrapCommand(sublime_plugin.TextCommand):
     def run(self, edit, insert_before=False):
-        wrapper = getWrapperType(self.view)
+
+        view = self.view
+        cursors = view.sel() if insert_before else reversed(view.sel())
+
+        for cursor in cursors:
+            a = view.scope_name(cursor.begin())
+            b = view.match_selector(cursor.begin(), 'source.js')
+            print(" -- b", b)
+            print('a', a)
+
+        wrapperType = getWrapperType(self.view)
+        print("wrapperType", wrapperType);
+
+        wrapper = wrapConnector.get(wrapperType, None)
+        print("wrapper", wrapper);
 
         if not wrapper:
             return sublime.status_message('Console Wrap: Not work in this file type')
-        self.view.run_command(wrapper + '_wrapp_create', {'insert_before': insert_before})
+
+        wrapper.create(view, edit, insert_before)
+        print(" -- jsWrapp", jsWrapp)
+        # self.view.run_command(wrapper + '_wrapp_create', {'insert_before': insert_before})
 
 
 class ConsoleCleanCommand(sublime_plugin.TextCommand):
