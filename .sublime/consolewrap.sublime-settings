@@ -16,14 +16,14 @@
     },
     "supportedFileTypes" : {
         "embedding.php"  : "js",
-        "text.html.vue"  : "js",
-        "source.ts"      : "js",
-        "source.tsx"     : "js",
-        "source.coffee"  : "js",
-        "source.js"      : "js",
-        "text.html.basic": "js",
-        "text.html.blade": "js",
-        "text.html.twig" : "js",
-        "source.python"  : "py"
+                "text.html.vue"  : "js",
+                "source.ts"      : "js",
+                "source.tsx"     : "js",
+                "source.coffee"  : "js",
+                "source.js"      : "js",
+                "text.html.basic": "js",
+                "text.html.blade": "js",
+                "text.html.twig" : "js",
+                "source.python"  : "python"
     }
 }

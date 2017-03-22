@@ -9,14 +9,13 @@ except ValueError:
     from settings import settings
     from tools import *
 
-class PyWrappBase(sublime_plugin.TextCommand):
+class PySettings():
 
     def getConsoleFunc(self):
         return settings().get('py').get('consoleFunc', ['print'])
 
     def getConsoleLogTypes(self):
         return settings().get('py').get('log_types', ["debug", "info", "warn", "error", "critical"])
-
 
     def getConsoleStr(self):
         return settings().get('py').get('consoleStr', "{title}, {variable}")
@@ -25,57 +24,50 @@ class PyWrappBase(sublime_plugin.TextCommand):
         return settings().get('py').get('single_quotes', False)
 
 
-class PyWrappCreateCommand(PyWrappBase):
+class PyWrapp(PySettings):
 
-    def run(self, edit, insert_before=False):
-        view = self.view
-        cursors = view.sel() if insert_before else reversed(view.sel())
+    def create(self, view, edit, cursor, insert_before):
 
-        for cursor in cursors:
+        line_region = view.line(cursor)
+        string = view.substr(line_region)
+        match = re.search(r"(\s*)", string)
+        end = 0
 
-            if not view.match_selector(cursor.begin(), 'source.python'):
-                string = None
-                continue
+        if self.is_log_string(string):
+            self.change_log_type(view, edit, line_region, string)
+            return end
 
-            line_region = view.line(cursor)
-            string = view.substr(line_region)
-            match = re.search(r"(\s*)", string)
+        if match:
+            # check if cursor is on the word and trying to get that word 
+            if cursor.begin() == cursor.end():
+                word = view.word(cursor)
+            else:
+                word = cursor
 
-            if self.is_log_string(string):
-                return self.change_log_type(view, edit, line_region, string)
+            var_text = view.substr(word).strip()
 
-            if match:
-                # check if cursor is on the word and trying to get that word 
-                if cursor.begin() == cursor.end():
-                    word = view.word(cursor)
+            # if selection is empty and there is no word under cursor use clipboard
+            if not var_text:
+                var_text = sublime.get_clipboard()
+
+            if var_text[-1:] == ";":
+                var_text = var_text[:-1]
+
+            if len(var_text) == 0:
+                return sublime.status_message('Console Wrap: Please make a selection or copy something.')
+            else:
+                indent_str = self.get_indent(view, line_region,insert_before)
+                text = self.get_wrapper(view, var_text, indent_str, insert_before)
+                # msg('text', text)
+                if insert_before:
+                    lineReg = line_region.begin()
                 else:
-                    word = cursor
+                    lineReg = line_region.end()
+                view.insert(edit, lineReg, text)
+                end = view.line(lineReg + 1).end()
+            view.sel().subtract(sublime.Region(cursor.begin(), cursor.end()))
 
-                var_text = view.substr(word).strip()
-
-                # if selection is empty and there is no word under cursor use clipboard
-                if not var_text:
-                    var_text = sublime.get_clipboard()
-
-                if var_text[-1:] == ";":
-                    var_text = var_text[:-1]
-
-                if len(var_text) == 0:
-                    return sublime.status_message('Console Wrap: Please make a selection or copy something.')
-                else:
-                    indent_str = self.get_indent(view, line_region,insert_before)
-                    text = self.get_wrapper(view, var_text, indent_str, insert_before)
-                    # msg('text', text)
-                    if insert_before:
-                        lineReg = line_region.begin()
-                    else:
-                        lineReg = line_region.end()
-                    view.insert(edit, lineReg, text)
-                    end = view.line(lineReg + 1).end()
-
-        if not self.is_log_string(string):
-            view.sel().clear()
-            view.sel().add(sublime.Region(end, end))
+        return end
 
     def is_log_string(self, line):
         log_types =  self.getConsoleLogTypes()
@@ -146,30 +138,29 @@ class PyWrappCreateCommand(PyWrappBase):
 
         return tmpl
 
-
-class PyWrappCommentCommand(PyWrappBase):
-    def run(self, edit):
+    def comment(self, view, edit):
         logFunc = self.getConsoleFunc()[0]
-        get_selections(self, sublime)
-        cursor = self.view.sel()[0]
-        line_region = self.view.line(cursor)
-        string = self.view.substr(line_region)
+        get_selections(view, sublime)
+        cursor = view.sel()[0]
+        line_region = view.line(cursor)
+        string = view.substr(line_region)
         matches = re.finditer(r"(?<!#\s)"+logFunc+".*?\);?", string, re.MULTILINE)
 
         for matchNum, match in enumerate(matches):
             string = string.replace(match.group(0), "# "+match.group(0))
 
-        self.view.replace(edit, line_region, string)
-        self.view.sel().clear()
+        view.replace(edit, line_region, string)
+        view.sel().clear()
 
-
-class PyWrappRemoveCommand(PyWrappBase):
-    def run(self, edit):
+    def remove(self, view, edit):
         logFunc = self.getConsoleFunc()[0]
-        get_selections(self, sublime)
-        cursor = self.view.sel()[0]
-        line_region = self.view.line(cursor)
-        string = self.view.substr(line_region)
+        get_selections(view, sublime)
+        cursor = view.sel()[0]
+        line_region = view.line(cursor)
+        string = view.substr(line_region)
         newstring = re.sub(r"(#\s)?"+logFunc+".*?(\n);?", '\n', string)
-        self.view.replace(edit, line_region, newstring)
-        self.view.sel().clear()
+        view.replace(edit, line_region, newstring)
+        view.sel().clear()
+
+    def remove_commented(self, view, edit):
+        print('remove_commented')

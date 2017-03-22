@@ -6,6 +6,10 @@
 	"command": "console_clean",
 	"args": {"action": "remove"}
 }, {
+	"caption": "Console Wrap Remove Commented logs",
+	"command": "console_clean",
+	"args": {"action": "remove_commented"}
+}, {
 	"caption": "Console Wrap Comment logs",
 	"command": "console_clean",
 	"args": {"action": "comment"}

@@ -17,12 +17,12 @@ def plugin_loaded():
 wrapConnector = {}
 
 wrapConnector['js'] = JsWrapp()
+wrapConnector['py'] = PyWrapp()
+print(" -- wrapConnector", wrapConnector)
 
-
-
-def checkFileType(view):
+def getSupportedFileTypes():
     supportedFileTypes = {#settings().get('supportedFileTypesa') or {
-        "source.php"     : "js",
+        "embedding.php"  : "py",
         "text.html.vue"  : "js",
         "source.ts"      : "js",
         "source.tsx"     : "js",
@@ -33,15 +33,7 @@ def checkFileType(view):
         "text.html.twig" : "js",
         "source.python"  : "py"
     }
-    return (list(set(view.scope_name(0).split(' ')).intersection(supportedFileTypes)), supportedFileTypes)
-
-
-def getWrapperType(view):
-    fileTypeIntersect, supportedFileTypes = checkFileType(view)
-
-    wrapperType = supportedFileTypes.get(fileTypeIntersect[0], False)
-
-    return wrapperType
+    return supportedFileTypes
 
 
 class ConsoleWrapCommand(sublime_plugin.TextCommand):
@@ -50,25 +42,33 @@ class ConsoleWrapCommand(sublime_plugin.TextCommand):
         view = self.view
         cursors = view.sel() if insert_before else reversed(view.sel())
 
+        supportedFileTypes = getSupportedFileTypes()
+        lastPos = float("inf")
+
         for cursor in cursors:
-            a = view.scope_name(cursor.begin())
-            b = view.match_selector(cursor.begin(), 'source.js')
-            print(" -- b", b)
-            print('a', a)
+            scope_name = view.scope_name(cursor.begin())
+            fileTypeIntersect = list(set(scope_name.split(' ')).intersection(supportedFileTypes))
 
-        wrapperType = getWrapperType(self.view)
-        print("wrapperType", wrapperType);
+            if not fileTypeIntersect:
+                sublime.status_message('Console Wrap: Not work in this file type ( {} )'.format(scope_name.split(' ')[0]))
+                continue
 
-        wrapper = wrapConnector.get(wrapperType, None)
-        print("wrapper", wrapper);
 
-        if not wrapper:
-            return sublime.status_message('Console Wrap: Not work in this file type')
+            wrapperType = supportedFileTypes.get(fileTypeIntersect[0], False)
 
-        wrapper.create(view, edit, insert_before)
-        print(" -- jsWrapp", jsWrapp)
-        # self.view.run_command(wrapper + '_wrapp_create', {'insert_before': insert_before})
+            if view.match_selector(cursor.begin(), 'source.js'):
+                wrapperType = 'js'
+            
+            wrapper = wrapConnector.get(wrapperType, None)
 
+            if wrapper:
+                end = wrapper.create(view, edit, cursor,insert_before)
+                lastPos = end if end < lastPos else lastPos
+
+        if lastPos > 0 and lastPos < float("inf"):
+            view.sel().clear()
+            view.sel().add(sublime.Region(lastPos, lastPos))
+            self.view.run_command("move_to", {"to": "eol"})
 
 class ConsoleCleanCommand(sublime_plugin.TextCommand):
     def is_enabled(self):
@@ -77,6 +77,26 @@ class ConsoleCleanCommand(sublime_plugin.TextCommand):
         return True
 
     def run(self, edit, action=False):
-        self.view.run_command(getWrapperType(self.view) + '_wrapp_' + action)
+        view = self.view
+        cursors = view.sel()
+        supportedFileTypes = getSupportedFileTypes()
+
+        for cursor in cursors:
+            scope_name = view.scope_name(cursor.begin())
+            fileTypeIntersect = list(set(scope_name.split(' ')).intersection(supportedFileTypes))
+            print(" -- fileTypeIntersect", fileTypeIntersect)
+
+            if not fileTypeIntersect:
+                continue
+
+            wrapperType = supportedFileTypes.get(fileTypeIntersect[0], False)
+
+            if view.match_selector(cursor.begin(), 'source.js'):
+                wrapperType = 'js'
+
+            wrapper = wrapConnector.get(wrapperType, None)
+
+            if wrapper:
+                getattr(wrapper, action)(self.view, edit)
 
 
