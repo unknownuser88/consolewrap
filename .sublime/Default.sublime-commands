@@ -1,6 +1,7 @@
 [{
 	"caption": "Console Wrap Create logs",
-	"command": "console_wrap"
+	"command": "console_wrap",
+	// "args": {"action": "create"}
 }, {
 	"caption": "Console Wrap Remove logs",
 	"command": "console_clean",
@@ -13,4 +14,8 @@
 	"caption": "Console Wrap Comment logs",
 	"command": "console_clean",
 	"args": {"action": "comment"}
+}, {
+	"caption": "Console Wrap Quick Nav",
+	"command": "console_clean",
+	"args": {"action": "show_quick_nav"}
 }]

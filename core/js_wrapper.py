@@ -9,9 +9,10 @@ except ValueError:
     from settings import settings
     from tools import *
 
+
 class JsSettings():
     def getConsoleFunc(self):
-        return settings().get('js').get('consoleFunc', ['console','log'])
+        return settings().get('js').get('consoleFunc', ['console', 'log'])
 
     def getConsoleLogTypes(self):
         return settings().get('js').get('log_types', ['log', 'info', 'warn', 'error'])
@@ -21,7 +22,7 @@ class JsSettings():
 
     def getConsoleSingleQuotes(self):
         return settings().get('js').get('single_quotes', False)
-        
+
 
 class JsWrapp(JsSettings):
 
@@ -37,7 +38,7 @@ class JsWrapp(JsSettings):
             return end
 
         if match:
-            # check if cursor is on the word and trying to get that word 
+            # check if cursor is on the word and trying to get that word
             if cursor.begin() == cursor.end():
                 word = view.word(cursor)
             else:
@@ -55,7 +56,7 @@ class JsWrapp(JsSettings):
             if len(var_text) == 0:
                 return sublime.status_message('Console Wrap: Please make a selection or copy something.')
             else:
-                indent_str = self.get_indent(view, line_region,insert_before)
+                indent_str = self.get_indent(view, line_region, insert_before)
                 text = self.get_wrapper(view, var_text, indent_str, insert_before)
                 # msg('text', text)
                 if insert_before:
@@ -70,20 +71,22 @@ class JsWrapp(JsSettings):
         return end
 
     def is_log_string(self, line):
-        log_types =  self.getConsoleLogTypes()
+        log_types = self.getConsoleLogTypes()
         logFunc = self.getConsoleFunc()[0]
         return True in [line.strip().startswith(logFunc) for i in log_types]
 
     def change_log_type(self, view, edit, line_region, line):
-        log_types =  self.getConsoleLogTypes()
+        log_types = self.getConsoleLogTypes()
         logFunc = self.getConsoleFunc()[0]
         current_type = None
         matches = re.findall(r'('+logFunc+')(\.?)(\w+)?', line)
-        if not matches: return
+        if not matches:
+            return
         func, dot, method = matches[0]
 
         if dot:
-            if method not in log_types: return
+            if method not in log_types:
+                return
             inc = True and 1 or -1
             next_type = log_types[(log_types.index(method) + 1) % len(log_types)]
             new_line = line.replace(logFunc + '.' + method, logFunc + '.' + next_type)
@@ -129,7 +132,7 @@ class JsWrapp(JsSettings):
         tmpl = indent_str if insert_before else ("\n" + indent_str)
 
         quotes = "'" if single_quotes else "\""
-        a = "{4}({0}{1}{0}{2}{3});".format(quotes, t, separator, v , ".".join(consoleFunc))
+        a = "{4}({0}{1}{0}{2}{3});".format(quotes, t, separator, v, ".".join(consoleFunc))
         a = a.format(title=text, variable=var)
 
         tmpl += a
@@ -138,7 +141,7 @@ class JsWrapp(JsSettings):
 
         return tmpl
 
-    def comment(self, view, edit):
+    def comment(self, view, edit, cursor):
         logFunc = self.getConsoleFunc()[0]
         get_selections(view, sublime)
         cursor = view.sel()[0]
@@ -152,7 +155,7 @@ class JsWrapp(JsSettings):
         view.replace(edit, line_region, string)
         view.sel().clear()
 
-    def remove(self, view, edit):
+    def remove(self, view, edit, cursor):
         logFunc = self.getConsoleFunc()[0]
         get_selections(view, sublime)
         cursor = view.sel()[0]
@@ -162,7 +165,39 @@ class JsWrapp(JsSettings):
         view.replace(edit, line_region, newstring)
         view.sel().clear()
 
-    def remove_commented(self, view, edit):
+    def quick_nav_done(self, view, index, regions, showOnly=False):
+        view.sel().clear()
+        region = sublime.Region(regions[index].b)
+        if not showOnly:
+            view.sel().add(region)
+        view.show_at_center(region)
+
+    def show_quick_nav(self, view, edit, cursor):
+        tags = []
+        regions = []
+
+        logFunc = self.getConsoleFunc()[0]
+        get_selections(view, sublime)
+        counter = 1
+        regex = re.compile(r"(\/\/\s)?("+logFunc+")(\.?)(\w+)?\((.+)?\);?", re.UNICODE | re.DOTALL)
+        for comment_region in view.sel():
+            for splited_region in view.split_by_newlines(comment_region):
+                m = regex.search(view.substr(splited_region))
+                if m:
+                    # Add a counter for faster selection
+                    tag = m.group(0)
+                    tags.append(str(counter) + '. ' + tag)
+                    regions.append(splited_region)
+                    counter += 1
+
+        if (len(tags)):
+            view.window().show_quick_panel(tags, lambda index: self.quick_nav_done(view, index, regions), 0, 0, lambda index: self.quick_nav_done(view, index, regions))
+        else:
+            sublime.status_message("Console Wrap: No 'logs' found")
+
+        view.sel().clear()
+
+    def remove_commented(self, view, edit, cursor):
         print('remove_commented')
         logFunc = self.getConsoleFunc()[0]
         get_selections(view, sublime)

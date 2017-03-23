@@ -138,7 +138,7 @@ class PyWrapp(PySettings):
 
         return tmpl
 
-    def comment(self, view, edit):
+    def comment(self, view, edit, cursor):
         logFunc = self.getConsoleFunc()[0]
         get_selections(view, sublime)
         cursor = view.sel()[0]
@@ -152,7 +152,7 @@ class PyWrapp(PySettings):
         view.replace(edit, line_region, string)
         view.sel().clear()
 
-    def remove(self, view, edit):
+    def remove(self, view, edit, cursor):
         logFunc = self.getConsoleFunc()[0]
         get_selections(view, sublime)
         cursor = view.sel()[0]
@@ -162,5 +162,36 @@ class PyWrapp(PySettings):
         view.replace(edit, line_region, newstring)
         view.sel().clear()
 
-    def remove_commented(self, view, edit):
+    def quick_nav_done(self, view, index, regions, showOnly=False):
+        region = sublime.Region(regions[index].b)
+        if not showOnly: 
+            view.sel().add(region)
+        view.show_at_center(region)
+
+    def show_quick_nav(self, view, edit, cursor):
+        tags = []
+        regions = []
+
+        logFunc = self.getConsoleFunc()[0]
+        get_selections(view, sublime)
+        counter = 1
+        regex = re.compile(r"(\/\/\s)?("+logFunc+")(\.?)(\w+)?\((.+)?\);?", re.UNICODE|re.DOTALL)
+        for comment_region in view.sel():
+            for splited_region in view.split_by_newlines(comment_region):
+                m = regex.search(view.substr(splited_region))
+                if m:
+                    # Add a counter for faster selection
+                    tag = m.group(0)
+                    tags.append(str(counter) + '. ' + tag)
+                    regions.append(splited_region)
+                    counter += 1
+
+        if (len(tags)):
+            view.window().show_quick_panel(tags, lambda index : self.quick_nav_done(view, index, regions), 0, 0, lambda index : self.quick_nav_done(view, index, regions, True))
+        else:
+            sublime.status_message("Console Wrap: No 'logs' found")
+
+        view.sel().clear()
+
+    def remove_commented(self, view, edit, cursor):
         print('remove_commented')
