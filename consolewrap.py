@@ -42,7 +42,12 @@ def supportedFile(view):
     supported = False
     supportedFileTypes = getSupportedFileTypes()
 
-    for cursor in view.sel():
+    cursors = view.sel()
+
+    if not list(cursors):
+        view.sel().add(0)
+
+    for cursor in cursors:
         scope_name = view.scope_name(cursor.begin())
         fileTypeIntersect = list(set(scope_name.split(' ')).intersection(supportedFileTypes))
 
@@ -53,10 +58,13 @@ def supportedFile(view):
 
 
 def runCommand(view, edit, action, insert_before=False):
-    cursors = view.sel() if insert_before else reversed(view.sel())
+    cursors = view.sel()
 
     supportedFileTypes = getSupportedFileTypes()
     lastPos = float("inf")
+
+    if not list(cursors):
+        view.sel().add(0)
 
     for cursor in cursors:
         scope_name = view.scope_name(cursor.begin())
@@ -101,7 +109,7 @@ class ConsoleWrapCommand(sublime_plugin.TextCommand):
             self.view.run_command("move_to", {"to": "eol"})
 
 
-class ConsoleCleanCommand(sublime_plugin.TextCommand):
+class ConsoleActionCommand(sublime_plugin.TextCommand):
     def is_enabled(self):
         return supportedFile(self.view)
 

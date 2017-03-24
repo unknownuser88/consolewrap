@@ -4,18 +4,18 @@
 	// "args": {"action": "create"}
 }, {
 	"caption": "Console Wrap Remove logs",
-	"command": "console_clean",
+	"command": "console_action",
 	"args": {"action": "remove"}
 }, {
 	"caption": "Console Wrap Remove Commented logs",
-	"command": "console_clean",
+	"command": "console_action",
 	"args": {"action": "remove_commented"}
 }, {
 	"caption": "Console Wrap Comment logs",
-	"command": "console_clean",
+	"command": "console_action",
 	"args": {"action": "comment"}
 }, {
 	"caption": "Console Wrap Quick Nav",
-	"command": "console_clean",
+	"command": "console_action",
 	"args": {"action": "show_quick_nav"}
 }]

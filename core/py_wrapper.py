@@ -65,7 +65,7 @@ class PyWrapp(PySettings):
                     lineReg = line_region.end()
                 view.insert(edit, lineReg, text)
                 end = view.line(lineReg + 1).end()
-            view.sel().subtract(sublime.Region(cursor.begin(), cursor.end()))
+            # view.sel().subtract(sublime.Region(cursor.begin(), cursor.end()))
 
         return end
 
