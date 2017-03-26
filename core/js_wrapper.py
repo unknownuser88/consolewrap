@@ -27,7 +27,6 @@ class JsSettings():
 class JsWrapp(JsSettings):
 
     def create(self, view, edit, cursor, insert_before):
-
         line_region = view.line(cursor)
         string = view.substr(line_region)
         match = re.search(r"(\s*)", string)
@@ -65,8 +64,6 @@ class JsWrapp(JsSettings):
                     lineReg = line_region.end()
                 view.insert(edit, lineReg, text)
                 end = view.line(lineReg + 1).end()
-
-            # view.sel().subtract(sublime.Region(cursor.begin(), cursor.end()))
 
         return end
 
@@ -147,7 +144,7 @@ class JsWrapp(JsSettings):
         cursor = view.sel()[0]
         line_region = view.line(cursor)
         string = view.substr(line_region)
-        matches = re.finditer(r"(?<!\/\/\s)"+logFunc+"\..*?\);?", string, re.MULTILINE)
+        matches = re.finditer(r"(?<!\/\/\s)"+logFunc+"(\.?)(\w+)?\((.+)?\);?", string, re.MULTILINE)
 
         for matchNum, match in enumerate(matches):
             string = string.replace(match.group(0), "// "+match.group(0))
@@ -161,7 +158,7 @@ class JsWrapp(JsSettings):
         cursor = view.sel()[0]
         line_region = view.line(cursor)
         string = view.substr(line_region)
-        newstring = re.sub(r"(\/\/\s)?"+logFunc+"\..*?(\n);?", '\n', string)
+        newstring = re.sub(r"(\/\/\s)?"+logFunc+"(\.?)(\w+)?\((.+)?\);?", '', string)
         view.replace(edit, line_region, newstring)
         view.sel().clear()
 
@@ -204,6 +201,6 @@ class JsWrapp(JsSettings):
         cursor = view.sel()[0]
         line_region = view.line(cursor)
         string = view.substr(line_region)
-        newstring = re.sub(r"(\/\/\s)"+logFunc+"\..*?(\n);?", '\n', string)
+        newstring = re.sub(r"(\/\/\s)"+logFunc+"(\.?)(\w+)?\((.+)?\);?", '', string)
         view.replace(edit, line_region, newstring)
         view.sel().clear()

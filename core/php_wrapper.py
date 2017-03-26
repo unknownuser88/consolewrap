@@ -10,32 +10,30 @@ except ValueError:
     from tools import *
 
 
-class PySettings():
+class PhpSettings():
 
     def getConsoleFunc(self):
-        return settings().get('py').get('consoleFunc', ['print'])
+        return settings().get('php').get('consoleFunc', ['print_r'])
 
     def getConsoleLogTypes(self):
-        return settings().get('py').get('log_types', ["debug", "info", "warn", "error", "critical"])
+        return []
 
     def getConsoleStr(self):
-        return settings().get('py').get('consoleStr', "{title}, {variable}")
+        return "{variable}"
 
     def getConsoleSingleQuotes(self):
-        return settings().get('py').get('single_quotes', False)
+        return True
 
 
-class PyWrapp(PySettings):
+class PhpWrapp(PhpSettings):
 
     def create(self, view, edit, cursor, insert_before):
-
         line_region = view.line(cursor)
         string = view.substr(line_region)
         match = re.search(r"(\s*)", string)
         end = 0
 
         if self.is_log_string(string):
-            self.change_log_type(view, edit, line_region, string)
             return end
 
         if match:
@@ -70,24 +68,8 @@ class PyWrapp(PySettings):
         return end
 
     def is_log_string(self, line):
-        log_types =  self.getConsoleLogTypes()
         logFunc = self.getConsoleFunc()[0]
-        return True in [line.strip().startswith(logFunc) for i in log_types]
-
-    def change_log_type(self, view, edit, line_region, line):
-        log_types =  self.getConsoleLogTypes()
-        logFunc = self.getConsoleFunc()[0]
-        current_type = None
-        matches = re.findall(r'('+logFunc+')(\.?)(\w+)?', line)
-        if not matches: return
-        func, dot, method = matches[0]
-
-        if dot:
-            if method not in log_types: return
-            inc = True and 1 or -1
-            next_type = log_types[(log_types.index(method) + 1) % len(log_types)]
-            new_line = line.replace(logFunc + '.' + method, logFunc + '.' + next_type)
-            view.replace(edit, line_region, new_line)
+        return line.strip().startswith("echo '<pre>'; "+logFunc) or line.strip().startswith(logFunc)
 
     def get_indent(self, view, region, insert_before):
         matches = re.findall(r'^(\s*)[^\s]', view.substr(region))
@@ -108,14 +90,10 @@ class PyWrapp(PySettings):
 
     def get_wrapper(self, view, var, indent_str, insert_before):
         consoleStr = self.getConsoleStr()
-        single_quotes = self.getConsoleSingleQuotes()
         consoleFunc = self.getConsoleFunc()
+        preTag = True
         separator = ", "
 
-        if single_quotes:
-            text = var.replace("'", "\\'")
-        else:
-            text = var.replace('"', '\\"')
 
         consoleArr = consoleStr.split(separator)
 
@@ -128,9 +106,12 @@ class PyWrapp(PySettings):
 
         tmpl = indent_str if insert_before else ("\n" + indent_str)
 
-        quotes = "'" if single_quotes else "\""
-        a = "{4}({0}{1}{0}{2}{3})".format(quotes, t, separator, v , ".".join(consoleFunc))
-        a = a.format(title=text, variable=var)
+        openPre = "echo '<pre>'; " if preTag else ""
+        closePre = " echo '</pre>';" if preTag else ""
+
+        a = "{2}{0}({1});{3}".format("->".join(consoleFunc), v, openPre, closePre)
+        print("a", a)
+        a = a.format(variable=var)
 
         tmpl += a
 
@@ -144,10 +125,10 @@ class PyWrapp(PySettings):
         cursor = view.sel()[0]
         line_region = view.line(cursor)
         string = view.substr(line_region)
-        matches = re.finditer(r"(?<!#\s)"+logFunc+"(\.?)(\w+)?\((.+)?\);?", string, re.MULTILINE)
+        matches = re.finditer(r"(?<!\/\/\s)(echo '<pre>';\s?)("+logFunc+")(\.?)(\w+)?\((.+)?\);( echo '<\/pre>';)?", string, re.MULTILINE)
 
         for matchNum, match in enumerate(matches):
-            string = string.replace(match.group(0), "# "+match.group(0))
+            string = string.replace(match.group(0), "// "+match.group(0))
 
         view.replace(edit, line_region, string)
         view.sel().clear()
@@ -158,7 +139,7 @@ class PyWrapp(PySettings):
         cursor = view.sel()[0]
         line_region = view.line(cursor)
         string = view.substr(line_region)
-        newstring = re.sub(r"(#\s)?"+logFunc+"(\.?)(\w+)?\((.+)?\);?", '', string)
+        newstring = re.sub(r"(\/\/\s)?(echo '<pre>';\s?)("+logFunc+")(\.?)(\w+)?\((.+)?\);( echo '<\/pre>';)?", '', string)
         view.replace(edit, line_region, newstring)
         view.sel().clear()
 
@@ -175,7 +156,7 @@ class PyWrapp(PySettings):
         logFunc = self.getConsoleFunc()[0]
         get_selections(view, sublime)
         counter = 1
-        regex = re.compile(r"(#\s)?"+logFunc+"(\.?)(\w+)?\((.+)?\);?", re.UNICODE|re.DOTALL)
+        regex = re.compile(r"(\s+)?"+logFunc+"(\.?)(\w+)?\((.+)?\);?", re.UNICODE|re.DOTALL)
         for comment_region in view.sel():
             for splited_region in view.split_by_newlines(comment_region):
                 m = regex.search(view.substr(splited_region))
@@ -199,6 +180,6 @@ class PyWrapp(PySettings):
         cursor = view.sel()[0]
         line_region = view.line(cursor)
         string = view.substr(line_region)
-        newstring = re.sub(r"(#\s)"+logFunc+"(\.?)(\w+)?\((.+)?\);?", '', string)
+        newstring = re.sub(r"(\/\/\s)(echo '<pre>';\s?)("+logFunc+")(\.?)(\w+)?\((.+)?\);( echo '<\/pre>';)?", '', string)
         view.replace(edit, line_region, newstring)
         view.sel().clear()

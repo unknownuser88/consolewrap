@@ -6,10 +6,13 @@ try:
     from .core.settings import *
     from .core.js_wrapper import *
     from .core.py_wrapper import *
+    from .core.php_wrapper import *
 except ValueError:
+    from core.tools import *
     from core.settings import *
     from core.js_wrapper import *
     from core.py_wrapper import *
+    from core.php_wrapper import *
 
 
 def plugin_loaded():
@@ -20,11 +23,12 @@ wrapConnector = {}
 
 wrapConnector['js'] = JsWrapp()
 wrapConnector['py'] = PyWrapp()
+wrapConnector['php'] = PhpWrapp()
 
 
 def getSupportedFileTypes():
-    supportedFileTypes = {  # settings().get('supportedFileTypesa') or {
-        "embedding.php": "py",
+    supportedFileTypes = settings().get('supportedFileTypesa') or {
+        "embedding.php": "php",
         "text.html.vue": "js",
         "source.ts": "js",
         "source.tsx": "js",
@@ -80,7 +84,7 @@ def runCommand(view, edit, action, insert_before=False):
         wrapperType = supportedFileTypes.get(fileTypeIntersect[0], False)
 
         if view.match_selector(cursor.begin(), 'source.php'):
-            wrapperType = 'py'
+            wrapperType = 'php'
 
         if view.match_selector(cursor.begin(), 'source.js'):
             wrapperType = 'js'

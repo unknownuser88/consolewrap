@@ -9,10 +9,13 @@
         "log_types": ["log", "info", "warn", "error"],
     },
     "py": {
-        "consoleStr": " -- {title}, {variable}",
+        "consoleStr": "{title}, {variable}",
         "consoleFunc": ["print"],
         "single_quotes": false,
         "log_types": ["debug", "info", "warn", "error", "critical"],
+    },
+    "php": {
+        "consoleFunc": ["print_r"],
     },
     "supportedFileTypes" : {
         "embedding.php"  : "js",
