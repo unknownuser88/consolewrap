@@ -23,6 +23,8 @@ class JsSettings():
     def getConsoleSingleQuotes(self):
         return settings().get('js').get('single_quotes', False)
 
+    def getSemicolonSetting(self):
+        return settings().get('js').get('semicolon', False)
 
 class JsWrapp(JsSettings):
 
@@ -109,6 +111,7 @@ class JsWrapp(JsSettings):
     def get_wrapper(self, view, var, indent_str, insert_before):
         consoleStr = self.getConsoleStr()
         single_quotes = self.getConsoleSingleQuotes()
+        insertSemicolon = self.getSemicolonSetting()
         consoleFunc = self.getConsoleFunc()
         separator = ", "
 
@@ -116,6 +119,11 @@ class JsWrapp(JsSettings):
             text = var.replace("'", "\\'")
         else:
             text = var.replace('"', '\\"')
+
+        if insertSemicolon:
+            semicolon = ";"
+        else:
+            semicolon = ""
 
         consoleArr = consoleStr.split(separator)
 
@@ -129,7 +137,7 @@ class JsWrapp(JsSettings):
         tmpl = indent_str if insert_before else ("\n" + indent_str)
 
         quotes = "'" if single_quotes else "\""
-        a = "{4}({0}{1}{0}{2}{3});".format(quotes, t, separator, v, ".".join(consoleFunc))
+        a = ("{4}({0}{1}{0}{2}{3})" + semicolon).format(quotes, t, separator, v, ".".join(consoleFunc))
         a = a.format(title=text, variable=var)
 
         tmpl += a
