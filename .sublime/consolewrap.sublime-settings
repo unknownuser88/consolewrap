@@ -17,6 +17,7 @@
     },
     "php": {
         "consoleFunc": ["print_r"],
+        "preTag": true,
     },
     "supportedFileTypes" : {
         "embedding.php"  : "js",
