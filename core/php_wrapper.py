@@ -18,6 +18,9 @@ class PhpSettings():
     def getPreTag(self):
         return settings().get('php').get('preTag', True)
 
+    def getDieAfterLog(self):
+        return settings().get('php').get('dieAfterLog', False)
+
     def getConsoleLogTypes(self):
         return []
 
@@ -95,6 +98,7 @@ class PhpWrapp(PhpSettings):
         consoleStr = self.getConsoleStr()
         consoleFunc = self.getConsoleFunc()
         preTag = self.getPreTag()
+        dieAfterLog = self.getDieAfterLog()
         separator = ", "
 
         consoleArr = consoleStr.split(separator)
@@ -111,7 +115,9 @@ class PhpWrapp(PhpSettings):
         openPre = "echo '<pre>'; " if preTag else ""
         closePre = " echo '</pre>';" if preTag else ""
 
-        a = "{2}{0}({1});{3}".format("->".join(consoleFunc), v, openPre, closePre)
+        dieStr = " die();" if dieAfterLog else ""
+
+        a = "{2}{0}({1});{3}{4}".format("->".join(consoleFunc), v, openPre, closePre, dieStr)
         a = a.format(variable=var)
 
         tmpl += a

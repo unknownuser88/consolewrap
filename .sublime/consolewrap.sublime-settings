@@ -1,34 +1,31 @@
 {
-	/*
-		you can customize consoleStr as you wish for example "{title}, tmpVal = {variable}" to assigne value to temporary parameter output: console.log('title', tmpVal = variable);
-	*/
     "js": {
-        "consoleStr": "{title}, {variable}",
-        "consoleFunc": ["console", "log"], // you can change default log statement for example ["logger", "info"] output: logger.info('title', variable);
-        "single_quotes": false, // if true output: console.log('title', variable);
-        "semicolon": true, // if false, will not add semicolon at end of line
-        "log_types": ["log", "info", "warn", "error"],
+        "consoleStr"   : "{title}, {variable}", // "{title}, tmpVal = {variable}" to assigne value to temporary parameter output: console.log('title', tmpVal = variable);
+        "consoleFunc"  : ["console", "log"],    // you can change default log statement for example ["logger", "info"] output: logger.info('title', variable);
+        "single_quotes": false,                 // if true output: console.log('title', variable);
+        "semicolon"    : true,                  // if false, will not add semicolon at end of line
+        "log_types"    : ["log", "info", "warn", "error"],
     },
     "py": {
-        "consoleStr": "{title}, {variable}",
-        "consoleFunc": ["print"],
-        "single_quotes": false,
-        "log_types": ["debug", "info", "warn", "error", "critical"],
+        "consoleStr"   : "{title}, {variable}",
+        "consoleFunc"  : ["print"],
+        "single_quotes": false
     },
     "php": {
-        "consoleFunc": ["print_r"],
-        "preTag": true,
+        "consoleFunc"  : ["print_r"],   // var_dump or if you have custom logger ["$logger", "debug"] output: $logger->debug($variable);
+        "preTag"       : true,          // put log in pre tag like echo '<pre>'; print_r($variable); echo '</pre>';
+        "dieAfterLog"  : false          // echo '<pre>'; print_r($variable); echo '</pre>'; die();
     },
     "supportedFileTypes" : {
-        "embedding.php"  : "js",
-                "text.html.vue"  : "js",
-                "source.ts"      : "js",
-                "source.tsx"     : "js",
-                "source.coffee"  : "js",
-                "source.js"      : "js",
-                "text.html.basic": "js",
-                "text.html.blade": "js",
-                "text.html.twig" : "js",
-                "source.python"  : "python"
+        "embedding.php"  : "php",
+        "text.html.vue"  : "js",
+        "source.ts"      : "js",
+        "source.tsx"     : "js",
+        "source.coffee"  : "js",
+        "source.js"      : "js",
+        "text.html.basic": "js",
+        "text.html.blade": "js",
+        "text.html.twig" : "js",
+        "source.python"  : "py"
     }
 }

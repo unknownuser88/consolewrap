@@ -2,7 +2,7 @@ ConsoleWrap for JS
 ================
 
 ## Summary
-This plugin places your selected variable in console.log as console.log('variable' , variable); javascript only.
+This plugin places your selected variable in console.log as console.log('variable' , variable);
 THIS IS NOT A SNIPPET.
 
 ## Screenshot
@@ -36,23 +36,35 @@ Edit settings to format output
 
 ```javascript
 {
-	/*
-		you can customize consoleStr as you wish for example "{title}, tmpVal = {variable}" to assigne value to temporary parameter output: console.log('title', tmpVal = variable);
-	*/
-    "consoleStr": "{title}, {variable}",
-    "consoleFunc": ["console", "log"], // you can change default log statement for example ["logger", "info"] output: logger.info('title', variable);
-    "single_quotes": false, // if true output: console.log('title', variable);
-    "supportedFileTypes" : [
-    	"text.html.vue",
-    	"source.ts",
-    	"source.tsx",
-    	"source.coffee",
-    	"source.js",
-    	"text.html.basic",
-    	"text.html.blade",
-    	"text.html.twig"
-    ],
-    "log_types": ["log", "info", "warn", "error"]
+    "js": {
+        "consoleStr"   : "{title}, {variable}", // "{title}, tmpVal = {variable}" to assigne value to temporary parameter output: console.log('title', tmpVal = variable);
+        "consoleFunc"  : ["console", "log"],    // you can change default log statement for example ["logger", "info"] output: logger.info('title', variable);
+        "single_quotes": false,                 // if true output: console.log('title', variable);
+        "semicolon"    : true,                  // if false, will not add semicolon at end of line
+        "log_types"    : ["log", "info", "warn", "error"],
+    },
+    "py": {
+        "consoleStr"   : "{title}, {variable}",
+        "consoleFunc"  : ["print"],
+        "single_quotes": false
+    },
+    "php": {
+        "consoleFunc"  : ["print_r"],   // var_dump or if you have custom logger ["$logger", "debug"] output: $logger->debug($variable);
+        "preTag"       : true,          // put log in pre tag like echo '<pre>'; print_r($variable); echo '</pre>';
+        "dieAfterLog"  : false          // echo '<pre>'; print_r($variable); echo '</pre>'; die();
+    },
+    "supportedFileTypes" : {
+        "embedding.php"  : "php",
+        "text.html.vue"  : "js",
+        "source.ts"      : "js",
+        "source.tsx"     : "js",
+        "source.coffee"  : "js",
+        "source.js"      : "js",
+        "text.html.basic": "js",
+        "text.html.blade": "js",
+        "text.html.twig" : "js",
+        "source.python"  : "py"
+    }
 }
 ```
 
