@@ -1,20 +1,20 @@
 [{
-	"caption": "Console Wrap Create logs",
+	"caption": "Console Wrap: Create logs",
 	"command": "console_wrap"
 }, {
-	"caption": "Console Wrap Remove logs",
+	"caption": "Console Wrap: Remove logs",
 	"command": "console_action",
 	"args": {"action": "remove"}
 }, {
-	"caption": "Console Wrap Remove Commented logs",
+	"caption": "Console Wrap: Remove Commented logs",
 	"command": "console_action",
 	"args": {"action": "remove_commented"}
 }, {
-	"caption": "Console Wrap Comment logs",
+	"caption": "Console Wrap: Comment logs",
 	"command": "console_action",
 	"args": {"action": "comment"}
 }, {
-	"caption": "Console Wrap Quick Nav",
+	"caption": "Console Wrap: Show all logs",
 	"command": "console_action",
 	"args": {"action": "show_quick_nav"}
 }]
