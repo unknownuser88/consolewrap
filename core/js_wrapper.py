@@ -4,10 +4,10 @@ import sublime_plugin
 
 try:
     from .settings import settings
-    from .tools import *
+    from .tools import get_selections, msg
 except ValueError:
     from settings import settings
-    from tools import *
+    from tools import get_selections, msg
 
 
 class JsSettings():
@@ -70,9 +70,8 @@ class JsWrapp(JsSettings):
         return end
 
     def is_log_string(self, line):
-        log_types = self.getConsoleLogTypes()
         logFunc = self.getConsoleFunc()[0]
-        return True in [line.strip().startswith(logFunc) for i in log_types]
+        return re.match(r"(\/\/\s)?"+logFunc+"(\.?)(\w+)?\((.+)?\);?", line.strip())
 
     def change_log_type(self, view, edit, line_region, line):
         log_types = self.getConsoleLogTypes()
@@ -137,7 +136,7 @@ class JsWrapp(JsSettings):
         tmpl = indent_str if insert_before else ("\n" + indent_str)
 
         quotes = "'" if single_quotes else "\""
-        a = ("{4}({0}{1}{0}{2}{3})" + semicolon).format(quotes, t, separator, v, ".".join(consoleFunc))
+        a = ("{4}({0}{1}{0}{2}{3}){5}").format(quotes, t, separator, v, ".".join(consoleFunc), semicolon)
         a = a.format(title=text, variable=var)
 
         tmpl += a
@@ -203,7 +202,6 @@ class JsWrapp(JsSettings):
         view.sel().clear()
 
     def remove_commented(self, view, edit, cursor):
-        print('remove_commented')
         logFunc = self.getConsoleFunc()[0]
         get_selections(view, sublime)
         cursor = view.sel()[0]

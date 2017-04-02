@@ -2,21 +2,21 @@ import sublime
 import sublime_plugin
 
 try:
-    from .core.tools import *
-    from .core.settings import *
-    from .core.js_wrapper import *
-    from .core.py_wrapper import *
-    from .core.php_wrapper import *
+    from .core.tools import get_selections, msg
+    from .core.settings import settings
+    from .core.js_wrapper import JsWrapp
+    from .core.py_wrapper import PyWrapp
+    from .core.php_wrapper import PhpWrapp
 except ValueError:
-    from core.tools import *
-    from core.settings import *
-    from core.js_wrapper import *
-    from core.py_wrapper import *
-    from core.php_wrapper import *
+    from core.tools import get_selections, msg
+    from core.settings import settings
+    from core.js_wrapper import JsWrapp
+    from core.py_wrapper import PyWrapp
+    from core.php_wrapper import PhpWrapp
 
 
 def plugin_loaded():
-    msg('*' * 30 + ' start ' + '*' * 30)
+    print('[Console Wrap] ' + '*' * 30 + ' loaded ' + '*' * 30)
 
 
 wrapConnector = {}
@@ -26,25 +26,28 @@ wrapConnector['py'] = PyWrapp()
 wrapConnector['php'] = PhpWrapp()
 
 
-def getSupportedFileTypes():
-    supportedFileTypes = settings().get('supportedFileTypesa') or {
-        "embedding.php": "php",
+def getFileTypeMap():
+    fileTypeMap = settings().get('fileTypeMap') or {
         "text.html.vue": "js",
         "source.ts": "js",
         "source.tsx": "js",
         "source.coffee": "js",
-        "source.js": "js",
         "text.html.basic": "js",
         "text.html.blade": "js",
-        "text.html.twig": "js",
+        "text.html.twig": "js"
+    }
+    defMap = {
+        "embedding.php": "php",
+        "source.js": "js",
         "source.python": "py"
     }
-    return supportedFileTypes
+    fileTypeMap.update(defMap)
+    return fileTypeMap
 
 
 def supportedFile(view):
     supported = False
-    supportedFileTypes = getSupportedFileTypes()
+    fileTypeMap = getFileTypeMap()
 
     cursors = view.sel()
 
@@ -53,7 +56,7 @@ def supportedFile(view):
 
     for cursor in cursors:
         scope_name = view.scope_name(cursor.begin())
-        fileTypeIntersect = list(set(scope_name.split(' ')).intersection(supportedFileTypes))
+        fileTypeIntersect = list(set(scope_name.split(' ')).intersection(fileTypeMap))
 
         if fileTypeIntersect:
             supported = True
@@ -64,7 +67,7 @@ def supportedFile(view):
 def runCommand(view, edit, action, insert_before=False):
     cursors = view.sel()
 
-    supportedFileTypes = getSupportedFileTypes()
+    fileTypeMap = getFileTypeMap()
     lastPos = float("inf")
 
     if not list(cursors):
@@ -73,7 +76,7 @@ def runCommand(view, edit, action, insert_before=False):
     for cursor in cursors:
         scope_name = view.scope_name(cursor.begin())
 
-        fileTypeIntersect = list(set(scope_name.split(' ')).intersection(supportedFileTypes))[::-1]
+        fileTypeIntersect = list(set(scope_name.split(' ')).intersection(fileTypeMap))[::-1]
 
         if not fileTypeIntersect:
             fileType = scope_name.split(' ')[0]
@@ -81,7 +84,7 @@ def runCommand(view, edit, action, insert_before=False):
             sublime.status_message(msg)
             continue
 
-        wrapperType = supportedFileTypes.get(fileTypeIntersect[0], False)
+        wrapperType = fileTypeMap.get(fileTypeIntersect[0], False)
 
         if view.match_selector(cursor.begin(), 'source.php'):
             wrapperType = 'php'

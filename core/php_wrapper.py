@@ -4,10 +4,10 @@ import sublime_plugin
 
 try:
     from .settings import settings
-    from .tools import *
+    from .tools import get_selections, msg
 except ValueError:
     from settings import settings
-    from tools import *
+    from tools import get_selections, msg
 
 
 class PhpSettings():
@@ -75,7 +75,7 @@ class PhpWrapp(PhpSettings):
 
     def is_log_string(self, line):
         logFunc = self.getConsoleFunc()[0]
-        return line.strip().startswith("echo '<pre>'; "+logFunc) or line.strip().startswith(logFunc)
+        return re.match(r"((\/\/\s)|(;\s))?(echo '<pre>';\s?)?(.+)?("+logFunc+")(\.?)(\w+)?\((.+)?\);( echo '<\/pre>';)?", line.strip())
 
     def get_indent(self, view, region, insert_before):
         matches = re.findall(r'^(\s*)[^\s]', view.substr(region))
@@ -146,7 +146,7 @@ class PhpWrapp(PhpSettings):
         cursor = view.sel()[0]
         line_region = view.line(cursor)
         string = view.substr(line_region)
-        newstring = re.sub(r"((\/\/\s)|(;\s))?(echo '<pre>';\s?)?("+logFunc+")(\.?)(\w+)?\((.+)?\);( echo '<\/pre>';)?", '', string)
+        newstring = re.sub(r"((\/\/\s)|(;\s))?(echo '<pre>';\s?)?(.+)?("+logFunc+")(\.?)(\w+)?\((.+)?\);( echo '<\/pre>';)?", '', string)
         view.replace(edit, line_region, newstring)
         view.sel().clear()
 
@@ -187,6 +187,6 @@ class PhpWrapp(PhpSettings):
         cursor = view.sel()[0]
         line_region = view.line(cursor)
         string = view.substr(line_region)
-        newstring = re.sub(r"(\/\/\s)(echo '<pre>';\s?)?("+logFunc+")(\.?)(\w+)?\((.+)?\);( echo '<\/pre>';)?", '', string)
+        newstring = re.sub(r"(\/\/\s)(echo '<pre>';\s?)?(.+)?("+logFunc+")(\.?)(\w+)?\((.+)?\);( echo '<\/pre>';)?", '', string)
         view.replace(edit, line_region, newstring)
         view.sel().clear()

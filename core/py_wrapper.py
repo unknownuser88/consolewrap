@@ -4,10 +4,10 @@ import sublime_plugin
 
 try:
     from .settings import settings
-    from .tools import *
+    from .tools import get_selections, msg
 except ValueError:
     from settings import settings
-    from tools import *
+    from tools import get_selections, msg
 
 
 class PySettings():
@@ -70,9 +70,8 @@ class PyWrapp(PySettings):
         return end
 
     def is_log_string(self, line):
-        log_types =  self.getConsoleLogTypes()
         logFunc = self.getConsoleFunc()[0]
-        return True in [line.strip().startswith(logFunc) for i in log_types]
+        return re.match(r"(#\s)?"+logFunc+"(\.?)(\w+)?\((.+)?\);?", line.strip())
 
     def change_log_type(self, view, edit, line_region, line):
         log_types =  self.getConsoleLogTypes()
