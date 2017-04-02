@@ -1,7 +1,7 @@
-ConsoleWrap
+Console Wrap
 ================
 
-## Summary
+
 This plugin helps you easily create (comment, remove, show all) log statements (console.log, print etc.)
 
 It places selected variable in log statement like console.log("variable", variable);
