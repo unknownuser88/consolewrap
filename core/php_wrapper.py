@@ -3,11 +3,11 @@ import sublime
 import sublime_plugin
 
 try:
-    from .settings import settings
-    from .tools import get_selections, msg
+    from .settings import *
+    from .tools import *
 except ValueError:
-    from settings import settings
-    from tools import get_selections, msg
+    from settings import *
+    from tools import *
 
 
 class PhpSettings():

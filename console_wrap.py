@@ -2,14 +2,14 @@ import sublime
 import sublime_plugin
 
 try:
-    from .core.tools import get_selections, msg
-    from .core.settings import settings
+    from .core.tools import *
+    from .core.settings import *
     from .core.js_wrapper import JsWrapp
     from .core.py_wrapper import PyWrapp
     from .core.php_wrapper import PhpWrapp
 except ValueError:
-    from core.tools import get_selections, msg
-    from core.settings import settings
+    from core.tools import *
+    from core.settings import *
     from core.js_wrapper import JsWrapp
     from core.py_wrapper import PyWrapp
     from core.php_wrapper import PhpWrapp
