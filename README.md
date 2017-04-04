@@ -92,7 +92,7 @@ The default key binding is `"ctrl+shift+q"` and `"ctrl+shift+alt+q"` (insert bef
         "consoleFunc"  : ["console", "log"],    // You can change default log statement for example ["logger", "info"] output: logger.info('title', variable);
         "single_quotes": false,                 // If true output: console.log('title', variable);
         "semicolon"    : true,                  // If false, will not add semicolon at end of line
-        "log_types"    : ["log", "info", "warn", "error"],
+        "log_types"    : ["log", "info", "warn", "error"]
     },
     "py": {
         "consoleStr"   : "{title}, {variable}",
