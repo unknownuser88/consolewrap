@@ -132,10 +132,10 @@ class PhpWrapp(PhpSettings):
         cursor = view.sel()[0]
         line_region = view.line(cursor)
         string = view.substr(line_region)
-        matches = re.finditer(r"^((?!\/\/\s?))(echo '<pre>';\s?)?(.+)?("+logFunc+")(\.?)(\w+)?\((.+)?\);( echo '<\/pre>';)?", string, re.MULTILINE)
-
-        for match in matches:
-            string = string.replace(match.group(0), "// "+match.group(0))
+        rgx = re.compile('^[ \t]*((echo|'+logFunc+').*;)', re.MULTILINE)
+        for line in rgx.finditer(string):
+            # print(line.group(1))
+            string = string.replace(line.group(1), "// "+line.group(1))
 
         view.replace(edit, line_region, string)
         view.sel().clear()
