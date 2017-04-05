@@ -26,19 +26,19 @@ you can find that functionality in context menu (right click) or Command Palette
 
 | Javascript |
 | ---------- |
-| ![Javascript](https://github.com/unknownuser88/consolewrap/raw/master/images/js.gif) |
+| ![Javascript](https://github.com/unknownuser88/consolewrap/raw/demo/images/js.gif) |
 
 | Python |
 | ------ |
-| ![Python](https://github.com/unknownuser88/consolewrap/raw/master/images/py.gif)  |
+| ![Python](https://github.com/unknownuser88/consolewrap/raw/demo/images/py.gif)  |
 
 | Php |
 | --- |
-| ![Php](https://github.com/unknownuser88/consolewrap/raw/master/images/php.gif) |
+| ![Php](https://github.com/unknownuser88/consolewrap/raw/demo/images/php.gif) |
 
 | All Logs |
 | -------- |
-| ![All Logs](https://github.com/unknownuser88/consolewrap/raw/master/images/list.gif)  |
+| ![All Logs](https://github.com/unknownuser88/consolewrap/raw/demo/images/list.gif)  |
 
 
 ## Key Binding
