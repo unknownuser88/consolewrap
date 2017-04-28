@@ -12,6 +12,7 @@ It places selected variable in log statement like console.log("variable", variab
 
 * Javascript
 * Python
+* Go
 * Php
 
 ## Usage
@@ -99,13 +100,17 @@ The default key binding is `"ctrl+shift+q"` and `"ctrl+shift+alt+q"` (insert bef
         "consoleFunc"  : ["print"],
         "single_quotes": false
     },
+    "go": {
+        "consoleStr"   : "{title}, {variable}",
+        "consoleFunc"  : ["fmt", "Println"]
+    },
     "php": {
         "consoleFunc"  : ["print_r"],   // var_dump or if you have custom logger ["$logger", "debug"] output: $logger->debug($variable);
         "preTag"       : true,          // Put log in pre tag like echo '<pre>'; print_r($variable); echo '</pre>';
         "dieAfterLog"  : false          // echo '<pre>'; print_r($variable); echo '</pre>'; die();
     },
     "fileTypeMap" : {                   // Maps file type to wrapper. For example "text.html.vue": "js" means use js wrapper in vue js files
-        "text.html.vue"  : "js",        // php,python,js is included by dafault ("embedding.php": "php", "source.js": "js", "source.python": "py")
+        "text.html.vue"  : "js",        // php,go,python,js is included by dafault ("embedding.php": "php","source.go": "go", "source.js": "js", "source.python": "py")
         "source.ts"      : "js",
         "source.tsx"     : "js",
         "source.coffee"  : "js",

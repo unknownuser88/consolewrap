@@ -11,6 +11,10 @@
         "consoleFunc"  : ["print"],
         "single_quotes": false
     },
+    "go": {
+        "consoleStr"   : "{title}, {variable}",
+        "consoleFunc"  : ["fmt", "Println"]
+    },
     "php": {
         "consoleFunc"  : ["print_r"],   // var_dump or if you have custom logger ["$logger", "debug"] output: $logger->debug($variable);
         "preTag"       : true,          // Put log in pre tag like echo '<pre>'; print_r($variable); echo '</pre>';

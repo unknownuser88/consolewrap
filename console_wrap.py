@@ -7,12 +7,14 @@ try:
     from .core.js_wrapper import JsWrapp
     from .core.py_wrapper import PyWrapp
     from .core.php_wrapper import PhpWrapp
+    from .core.go_wrapper import GoWrapp
 except ValueError:
     from core.tools import *
     from core.settings import *
     from core.js_wrapper import JsWrapp
     from core.py_wrapper import PyWrapp
     from core.php_wrapper import PhpWrapp
+    from core.go_wrapper import GoWrapp
 
 
 def plugin_loaded():
@@ -24,6 +26,7 @@ wrapConnector = {}
 wrapConnector['js'] = JsWrapp()
 wrapConnector['py'] = PyWrapp()
 wrapConnector['php'] = PhpWrapp()
+wrapConnector['go'] = GoWrapp()
 
 
 def getFileTypeMap():
@@ -39,6 +42,7 @@ def getFileTypeMap():
     defMap = {
         "embedding.php": "php",
         "source.js": "js",
+        "source.go": "go",
         "source.python": "py"
     }
     fileTypeMap.update(defMap)
