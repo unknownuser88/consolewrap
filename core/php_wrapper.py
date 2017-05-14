@@ -134,8 +134,11 @@ class PhpWrapp(PhpSettings):
         string = view.substr(line_region)
         rgx = re.compile('^[ \t]*((echo|'+logFunc+').*;)', re.MULTILINE)
         for line in rgx.finditer(string):
-            # print(line.group(1))
             string = string.replace(line.group(1), "// "+line.group(1))
+
+        # remove duplicate 
+        for match in re.finditer(r"((\/\/\s?){2,})((echo|'+logFunc+').*;)", string, re.MULTILINE):
+            string = string.replace(match.group(1), "// ")
 
         view.replace(edit, line_region, string)
         view.sel().clear()

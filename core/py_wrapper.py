@@ -148,6 +148,10 @@ class PyWrapp(PySettings):
         for matchNum, match in enumerate(matches):
             string = string.replace(match.group(0), "# "+match.group(0))
 
+        # remove duplicate 
+        for match in re.finditer(r"((#\s?){2,})"+logFunc+"(\.?)(\w+)?\((.+)?\);?", string, re.MULTILINE):
+            string = string.replace(match.group(1), "# ")
+
         view.replace(edit, line_region, string)
         view.sel().clear()
 
