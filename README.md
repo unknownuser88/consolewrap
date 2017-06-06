@@ -1,6 +1,12 @@
 Console Wrap
 ================
 
+<p>
+    <img src="https://img.shields.io/github/release/unknownuser88/consolewrap.svg" alt="Release version">
+    <img src="https://img.shields.io/badge/stability-stable-brightgreen.svg" alt="Stability: Stable">
+    <img src="https://img.shields.io/packagecontrol/dt/Console%20Wrap.svg" alt="Package Control">
+    <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" alt="License: MIT">
+</p>
 
 This plugin helps you easily create (comment, remove, show all) log statements (console.log, print etc.)
 
