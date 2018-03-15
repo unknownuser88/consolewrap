@@ -1,14 +1,14 @@
 [
-    { "caption": "-" },
-    {
-        "caption": "Console Wrap",
-        "children":
-        [
-            { "command": "console_action", "args": {"action": "comment"}, "caption": "Comment All logs" },
-            { "command": "console_action", "args": {"action": "remove_commented"}, "caption": "Remove Commented logs" },
-            { "command": "console_action", "args": {"action": "remove"}, "caption": "Remove All logs" },
-            { "command": "console_action", "args": {"action": "show_quick_nav"}, "caption": "Show all logs"}
+	{ "caption": "-" },
+	{
+		"caption": "Console Wrap",
+		"children":
+		[
+			{ "command": "console_action", "args": {"action": "comment"}, "caption": "Comment All logs" },
+			{ "command": "console_action", "args": {"action": "remove_commented"}, "caption": "Remove Commented logs" },
+			{ "command": "console_action", "args": {"action": "remove"}, "caption": "Remove All logs" },
+			{ "command": "console_action", "args": {"action": "show_quick_nav"}, "caption": "Show all logs"}
 
-        ]
-    }
+		]
+	}
 ]
