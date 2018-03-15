@@ -32,19 +32,19 @@ you can find that functionality in context menu (right click) or Command Palette
 
 | Javascript |
 | ---------- |
-| ![Javascript](https://github.com/unknownuser88/consolewrap/raw/demo/images/js.gif) |
+| <img src="https://github.com/unknownuser88/consolewrap/raw/demo/images/js.gif" alt="Javascript"> |
 
 | Python |
 | ------ |
-| ![Python](https://github.com/unknownuser88/consolewrap/raw/demo/images/py.gif)  |
+| <img src="https://github.com/unknownuser88/consolewrap/raw/demo/images/py.gif" alt="Python"> |
 
 | Php |
 | --- |
-| ![Php](https://github.com/unknownuser88/consolewrap/raw/demo/images/php.gif) |
+| <img src="https://github.com/unknownuser88/consolewrap/raw/demo/images/php.gif" alt="Php"> |
 
 | All Logs |
 | -------- |
-| ![All Logs](https://github.com/unknownuser88/consolewrap/raw/demo/images/list.gif)  |
+| <img src="https://github.com/unknownuser88/consolewrap/raw/demo/images/list.gif" alt="All Logs"> |
 
 
 ## Key Binding
